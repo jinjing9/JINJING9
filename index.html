@@ -1,0 +1,693 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>VRC트친소 | 진징구</title>
+<meta name="theme-color" content="#a1bd9b" />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.85em%22 font-size=%2285%22>💚</text></svg>">
+<style>
+:root{
+  --main:#a1bd9b; --sub:#FAFFFA;
+  --ink:#1F2C23; --muted:#5E6F61;
+  --card:#FFFFFF; --line:rgba(33,52,39,.12); --soft:rgba(161,189,155,.20);
+  --r:18px; --shadow:0 10px 30px rgba(32,52,38,.07); --gap:22px;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; color:var(--ink);
+  font-family:'Noto Sans KR', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  letter-spacing:-.2px;
+  background:
+    radial-gradient(800px 300px at 90% -10%, rgba(161,189,155,.16), transparent 60%),
+    radial-gradient(600px 280px at 10% 110%, rgba(161,189,155,.14), transparent 60%),
+    var(--sub);
+}
+
+/* Header */
+.header{position:sticky; top:0; z-index:20; background:rgba(252,255,252,.75); backdrop-filter: blur(10px); border-bottom:1px solid var(--line)}
+.header__in{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:flex-start;padding:10px 20px;gap:12px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:900}
+.brand__dot{width:12px;height:12px;border-radius:50%;background:var(--main);box-shadow:0 0 0 6px var(--soft)}
+
+/* Layout */
+.container{max-width:1100px;margin:0 auto;padding:20px}
+.stack{display:grid;gap:var(--gap)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:18px}
+h2{margin:0 0 12px;font-size:22px;letter-spacing:-.3px;font-style:italic}
+
+/* Buttons */
+.btn{appearance:none;border:1px solid rgba(161,189,155,.55); cursor:pointer;border-radius:999px; padding:9px 14px; background:#fff; color:#24422a; font-weight:800; box-shadow:0 4px 10px rgba(32,52,38,.06); transition:transform .06s ease, background .15s ease, box-shadow .2s ease}
+.btn:hover{background:#eef6ed; box-shadow:0 8px 18px rgba(32,52,38,.08)}
+.btn:active{transform:translateY(1px)}
+.btn--small{padding:7px 12px; font-weight:700}
+
+/* Inputs */
+.input,.textarea,.select{width:100%;border-radius:12px;border:1px solid var(--line);padding:10px 12px;font:inherit;background:#fff;transition:box-shadow .2s,border-color .2s}
+.input:focus,.textarea:focus,.select:focus{outline:none;border-color: var(--main); box-shadow:0 0 0 4px var(--soft)}
+.textarea{min-height:120px;resize:vertical}
+
+/* About */
+.about-wide{display:grid;grid-template-columns:360px 1fr;gap:18px;align-items:stretch;background:linear-gradient(180deg,#ffffff,#f7fff7 70%)}
+.about-photo{border-radius:16px;overflow:hidden;border:1px solid var(--line);background:#f1fff1;display:block}
+.about-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.kv{display:grid;grid-template-columns:140px 1fr;gap:8px 12px;font-size:15px}
+.k{color:var(--muted)} .v{font-weight:800}
+.about-title{margin-bottom:6px}
+.about-title h1{margin:0;font-size:26px;letter-spacing:-.6px;font-style:italic}
+.about-title .sub{color:var(--muted);font-weight:500;margin-top:6px}
+
+/* Prefs */
+.prefbox .grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.prefbox .title{font-weight:900;margin-bottom:8px;font-style:italic}
+.pills{display:flex;flex-wrap:wrap;gap:10px}
+.pill{padding:9px 12px;border-radius:999px;background:#eef6f0;border:1px solid rgba(161,189,155,.50);font-size:13px}
+
+/* Guestbook */
+.gb-wrap{display:grid;grid-template-columns:420px 1fr;gap:20px}
+@media(max-width:980px){ .gb-wrap{grid-template-columns:1fr} }
+.seg{display:flex;gap:8px;margin-bottom:10px}
+.seg .btn[aria-pressed="true"]{background:#e7f3e6}
+.gb-list{display:grid;gap:12px}
+.gb-item{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;display:grid;grid-template-columns:1fr auto;gap:8px}
+.gb-name{font-weight:900}
+.gb-msg{white-space:pre-wrap}
+.gb-meta{font-size:12px;color:var(--muted)}
+
+/* Gallery */
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
+.thumb{position:relative;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:#f4fff4}
+.thumb img{width:100%;height:200px;object-fit:cover;display:block}
+.thumb .cap{position:absolute;left:8px;bottom:8px;right:8px;background:rgba(0,0,0,.45);color:#fff;font-size:12px;padding:6px 8px;border-radius:8px}
+.thumb .del{position:absolute;top:8px;right:8px}
+
+/* Mini Game */
+.game h2{display:flex;align-items:center;gap:10px}
+.game-wrap{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:18px;align-items:start}
+@media(max-width:980px){ .game-wrap{grid-template-columns:1fr} }
+.badge{border:1px solid rgba(161,189,155,.55);padding:6px 10px;border-radius:999px;background:#eef6ed;font-weight:800;display:inline-block}
+.game .panel{display:grid;gap:10px}
+
+/* 비율 고정 + 고해상도 렌더 준비 */
+.game-area{position:relative; border:1px solid var(--line); border-radius:16px; overflow:hidden; background:linear-gradient(180deg,#f7fff7,#ffffff); box-shadow:inset 0 0 0 1px rgba(161,189,155,.12)}
+#gameCanvas{width:100%; height:auto; aspect-ratio: 8 / 3; display:block}
+.game-overlay{position:absolute; inset:0; display:none; align-items:center; justify-content:center; flex-direction:column; gap:10px; background:rgba(252,255,252,.6); backdrop-filter: blur(2px)}
+.toast{position:absolute;top:12px;left:50%;transform:translateX(-50%);padding:6px 12px;border-radius:999px;background:#e7f3e6;border:1px solid rgba(161,189,155,.55);font-weight:900;display:none}
+
+/* Footer & hearts */
+.footer{max-width:1100px;margin:28px auto 40px;color:var(--muted);display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:0 20px}
+.heart{position:fixed;left:0;top:0;pointer-events:none;z-index:1000;font-size:20px;transform:translate(-50%,-50%) scale(1);opacity:1;will-change:transform,opacity,left,top}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header__in">
+    <div class="brand">
+      <span class="brand__dot"></span>
+      <span>VRC트친소 | 진징구</span>
+    </div>
+  </div>
+</header>
+
+<div class="container stack">
+  <!-- About -->
+  <section class="card about-wide" id="about" aria-label="About">
+    <a class="about-photo" href="#" onclick="openLightbox('https://pbs.twimg.com/media/GxX3xjQaYAAlouw?format=jpg&amp;name=900x900','');return false;">
+      <img src="https://pbs.twimg.com/media/GxX3xjQaYAAlouw?format=jpg&amp;name=900x900" alt="Profile image">
+    </a>
+    <div>
+      <div class="about-title">
+        <h1>VRC트친소 | 진징구</h1>
+        <div class="sub">One-liner: 17살 9주년 마법소녀 여고생</div>
+      </div>
+      <div class="kv" aria-label="Profile information" style="margin-top:12px">
+        <div class="k">Nickname</div><div class="v">진징구</div>
+        <div class="k">Active Time</div><div class="v">랜덤</div>
+        <div class="k">Play Type</div><div class="v">가끔 묵언(귀찮음 이슈), 반트</div>
+        <div class="k">Language</div><div class="v">0개국어</div>
+      </div>
+      <ul style="margin:14px 0 0;padding-left:18px;line-height:1.75">
+        <li>방명록이나 마음남겨주세요!╰(*°▽°*)╯</li>
+        <li>낯가림이 좀 있어서 교류? 소통은 조금 어려울 수도 있습니다</li>
+        <li>어 나도 그런데..? 하시는분들은 우리 서로 하트만 눌러주게요(^///^)</li>
+        <li>고양이 좋아 사람 싫어 하지만 너는빼고&lt; 부류의 사람입니다</li>
+        <li>소심하고 귀여운 사람을 좋아해요 시끄러운거 싫어해요</li>
+        <li>천천히 다가와주세요 아니면 귀여워주세요.</li>
+        <li>그렇다고 귀여운척은 안됩니다 사람이 귀여워야해요.</li>
+        <li>말이 많다구요? 기나죄 (기분나쁘셧으면 죄송하다는뜻ㅎ)</li>
+        <li>고양이 두마리, 연하남과 동거중이라 가끔 고양이, 사람소리가 마이크 너머로 들립니다</li>
+        <li>끝!</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Prefs -->
+  <section class="card prefbox" aria-label="Preferences and Avoid">
+    <div class="grid">
+      <div>
+        <div class="title">Preferences</div>
+        <div class="pills">
+          <span class="pill">월드 탐방</span>
+          <span class="pill">사진</span>
+          <span class="pill">뇌 빼고 수다떨기</span>
+        </div>
+      </div>
+      <div>
+        <div class="title">Avoid</div>
+        <div class="pills">
+          <span class="pill">과한 관심</span>
+          <span class="pill">사회성 낮은사람</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Guestbook -->
+  <section class="card" id="guestbook" aria-label="Guestbook">
+    <h2>Guestbook</h2>
+    <div class="gb-wrap">
+      <div class="gb-left">
+        <div class="seg" role="tablist" aria-label="Sort messages">
+          <button class="btn btn--small" id="sortLatest" aria-pressed="true" data-sort="latest">Latest</button>
+          <button class="btn btn--small" id="sortLikes"  aria-pressed="false" data-sort="likes">Most Liked</button>
+        </div>
+        <form id="gbForm" class="gb-form" autocomplete="off">
+          <div>
+            <label for="gbName">Nickname*</label>
+            <input id="gbName" class="input" required maxlength="24" placeholder="닉네임">
+          </div>
+          <div>
+            <label for="gbContact">X ID</label>
+            <input id="gbContact" class="input" maxlength="40" placeholder="@handle">
+          </div>
+          <div>
+            <label for="gbMsg">Message*</label>
+            <textarea id="gbMsg" class="textarea" required minlength="2" maxlength="500" rows="4" placeholder="한 줄 남겨주세요 💚"></textarea>
+          </div>
+          <button class="btn" type="submit">Submit</button>
+          <p class="hint" style="margin-top:8px">X ID는 저장만 되고 공개되지 않아요.</p>
+        </form>
+      </div>
+      <div class="gb-right">
+        <div id="gbList" class="gb-list" aria-live="polite"></div>
+        <p class="hint">Tip: 항목 클릭 후 <b>E</b> = 수정, <b>Delete</b> = 삭제 (내 브라우저에서 작성한 글만).</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Gallery -->
+  <section class="card" id="gallery" aria-label="Gallery">
+    <h2>Gallery</h2>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px">
+      <input class="input" type="file" id="fileInput" accept="image/*" multiple aria-label="Upload images">
+      <span class="hint">최대 6장 저장 · 새로 추가되면 가장 오래된 사진이 삭제돼요</span>
+    </div>
+    <div id="galleryGrid" class="gallery" aria-live="polite"></div>
+  </section>
+
+  <!-- Mini Game -->
+  <section class="card game" id="game" aria-label="Mini Game">
+    <h2>Mini Game</h2>
+    <div class="game-wrap">
+      <div class="game-area" id="gameArea" data-noparticle>
+        <canvas id="gameCanvas" width="800" height="300" aria-label="emoji runner game"></canvas>
+        <div class="game-overlay" id="gameOverlay" aria-live="polite">
+          <div style="font-weight:900">Game Over</div>
+          <div id="gameOverScore" class="badge">Score 0</div>
+          <button class="btn" id="btnRestart">Restart</button>
+          <div class="hint">닉네임 입력 후 <b>Save Score</b>를 눌러 저장해요.</div>
+        </div>
+        <div class="toast" id="levelToast">Level Up!</div>
+      </div>
+      <div class="panel">
+        <div class="badge">Score <span id="gCur">0</span></div>
+
+        <div>
+          <label for="rankName">Nickname</label>
+          <input id="rankName" class="input" placeholder="닉네임(최대 12자)" maxlength="12" autocomplete="off">
+        </div>
+        <button class="btn" id="btnSaveScore" disabled>Save Score</button>
+
+        <h3 style="margin:8px 0 0">TOP 5</h3>
+        <ol id="gRank" style="margin:0;padding-left:18px"></ol>
+
+        <div class="controls" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+          <button class="btn" id="btnStart">Start</button>
+          <button class="btn btn--small" id="btnPause">Pause</button>
+          <button class="btn btn--small" id="btnResume" style="display:none">Resume</button>
+          <button class="btn btn--small" id="btnClearRank">Clear TOP 5</button>
+        </div>
+        <p class="hint">조작: 탭/클릭 · Space/↑ 점프</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<footer class="footer">
+  <span>made by 진징구</span> · <span>CC BY-NC 4.0</span>
+</footer>
+
+<!-- Lightbox -->
+<div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-label="Image viewer" style="display:none;align-items:center;justify-content:center;z-index:50;background:rgba(0,0,0,.68);position:fixed;inset:0">
+  <button class="btn btn--small" style="position:absolute;top:16px;right:16px;background:#fff;color:#1c2b1c" onclick="closeLightbox()">Close ✕</button>
+  <img id="lightboxImg" alt="" style="max-width:90vw;max-height:80vh;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.4)">
+</div>
+
+<script>
+/* ===== Helpers ===== */
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+function loadJson(key, fallback){ try{ return JSON.parse(localStorage.getItem(key)||'') ?? fallback; }catch{ return fallback; } }
+function saveJson(key, val){ localStorage.setItem(key, JSON.stringify(val)); }
+
+/* ===== 💚 hearts (game 영역 제외) ===== */
+(function(){
+  let tokens = 12;
+  setInterval(()=>{ tokens = Math.min(12, tokens+3); }, 250);
+  function spawn(x,y){
+    if(tokens<=0) return; tokens--;
+    const el = document.createElement('div'); el.className='heart'; el.textContent='💚';
+    document.body.appendChild(el);
+    const rot=(Math.random()*40-20), scaleTo=1.6+Math.random()*0.6;
+    const dx=(Math.random()*60-30), dy=-(50+Math.random()*60);
+    const start=performance.now(), dur=500+Math.random()*400;
+    function frame(now){
+      const t=Math.min(1,(now-start)/dur);
+      const ease=t<.5?2*t*t:-1+(4-2*t)*t;
+      const cx=x+dx*ease, cy=y+dy*ease;
+      el.style.left=cx+'px'; el.style.top=cy+'px';
+      el.style.transform=`translate(-50%,-50%) rotate(${rot*ease}deg) scale(${1+(scaleTo-1)*ease})`;
+      el.style.opacity=1-t;
+      if(t<1) requestAnimationFrame(frame); else el.remove();
+    }
+    requestAnimationFrame(frame);
+  }
+  document.addEventListener('pointerdown', e=>{
+    const tag=(e.target.tagName||'').toLowerCase();
+    if(['input','textarea','select','button','a','label','canvas'].includes(tag)) return;
+    if(e.target.closest('[data-noparticle]')) return; // 게임 영역 차단
+    spawn(e.clientX, e.clientY);
+  });
+})();
+
+/* ===== Lightbox ===== */
+const lightbox = $('#lightbox'), lightboxImg = $('#lightboxImg');
+function openLightbox(src, alt){ lightboxImg.src=src; lightboxImg.alt=alt||''; lightbox.style.display='flex'; }
+function closeLightbox(){ lightbox.style.display='none'; lightboxImg.src=''; }
+lightbox.addEventListener('click', e=>{ if(e.target===lightbox) closeLightbox(); });
+window.addEventListener('keydown', e=>{ if(e.key==='Escape' && lightbox.style.display==='flex') closeLightbox(); });
+
+/* ===== Gallery (persist, max 6, delete) ===== */
+const GAL_KEY='vrc_jing_gallery_v1';
+const fileInput=$('#fileInput'), galleryGrid=$('#galleryGrid');
+let gallery=loadJson(GAL_KEY,[]);
+renderGallery();
+fileInput?.addEventListener('change', async e=>{
+  const files=Array.from(e.target.files||[]);
+  for(const f of files){
+    if(!f.type.startsWith('image/')) continue;
+    const dataUrl=await fileToResizedDataURL(f,1280);
+    gallery.unshift({dataUrl,cap:''}); while(gallery.length>6) gallery.pop();
+  }
+  saveJson(GAL_KEY,gallery); renderGallery(); fileInput.value='';
+});
+function renderGallery(){
+  galleryGrid.innerHTML='';
+  gallery.forEach((it,idx)=>{
+    const item=document.createElement('div'); item.className='thumb';
+    const img=document.createElement('img'); img.src=it.dataUrl; img.alt='gallery-'+idx;
+    img.addEventListener('click',()=>openLightbox(it.dataUrl,it.cap||''));
+    const cap=document.createElement('div'); cap.className='cap';
+    const input=document.createElement('input');
+    Object.assign(input.style,{width:'100%',border:'none',background:'transparent',color:'#fff',outline:'none'});
+    input.placeholder='캡션(예: 카페 월드에서 📸)'; input.maxLength=60; input.value=it.cap||'';
+    input.addEventListener('input',()=>{ gallery[idx].cap=input.value; saveJson(GAL_KEY,gallery); });
+    const del=document.createElement('button'); del.className='btn btn--small del'; del.textContent='Delete';
+    del.addEventListener('click',ev=>{ ev.stopPropagation(); gallery.splice(idx,1); saveJson(GAL_KEY,gallery); renderGallery(); });
+    cap.appendChild(input); item.appendChild(img); item.appendChild(cap); item.appendChild(del);
+    galleryGrid.appendChild(item);
+  });
+}
+function fileToResizedDataURL(file,maxSize=1280){
+  return new Promise(resolve=>{
+    const reader=new FileReader();
+    reader.onload=()=>{
+      const img=new Image();
+      img.onload=()=>{
+        const scale=Math.min(1,maxSize/Math.max(img.width,img.height));
+        const cw=Math.round(img.width*scale), ch=Math.round(img.height*scale);
+        const canvas=document.createElement('canvas'); canvas.width=cw; canvas.height=ch;
+        canvas.getContext('2d').drawImage(img,0,0,cw,ch);
+        resolve(canvas.toDataURL('image/jpeg',0.9));
+      };
+      img.src=reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+/* ===== Guestbook (persist) ===== */
+const GB_KEY='vrc_jing_guestbook_v1';
+const GB_MY='vrc_jing_me_ids_v1';
+const GB_LIK='vrc_jing_liked_ids_v1';
+let gb=loadJson(GB_KEY,[]), meIds=new Set(loadJson(GB_MY,[])), liked=new Set(loadJson(GB_LIK,[]));
+let sortMode='latest';
+$('#sortLatest').addEventListener('click',()=>setSort('latest'));
+$('#sortLikes').addEventListener('click',()=>setSort('likes'));
+function setSort(mode){
+  sortMode=mode;
+  $('#sortLatest').setAttribute('aria-pressed',mode==='latest');
+  $('#sortLikes').setAttribute('aria-pressed',mode==='likes');
+  renderGB();
+}
+function genId(){ return 'gb_'+Math.random().toString(36).slice(2,9)+Date.now().toString(36); }
+function renderGB(){
+  const items=[...gb];
+  if(sortMode==='latest') items.sort((a,b)=>b.ts-a.ts);
+  else items.sort((a,b)=>(b.likes||0)-(a.likes||0));
+  const list=$('#gbList'); list.innerHTML='';
+  for(const it of items){
+    const row=document.createElement('div'); row.className='gb-item'; row.dataset.id=it.id;
+    const left=document.createElement('div');
+    const name=document.createElement('div'); name.className='gb-name'; name.textContent=it.name;
+    const msg=document.createElement('div'); msg.className='gb-msg';  msg.textContent=it.msg;
+    const meta=document.createElement('div'); meta.className='gb-meta'; meta.textContent=new Date(it.ts).toLocaleString()+` · Likes ${it.likes||0}`;
+    left.appendChild(name); left.appendChild(msg); left.appendChild(meta);
+    const ops=document.createElement('div');
+    const likeBtn=document.createElement('button'); likeBtn.className='btn btn--small';
+    likeBtn.textContent=liked.has(it.id)?'💚 Undo':'💚 Like';
+    likeBtn.addEventListener('click',e=>{ e.stopPropagation(); toggleLike(it.id); });
+    ops.appendChild(likeBtn);
+    if(meIds.has(it.id)){
+      const editBtn=document.createElement('button'); editBtn.className='btn btn--small'; editBtn.textContent='Edit';
+      editBtn.addEventListener('click',e=>{ e.stopPropagation(); editItem(it.id); });
+      const delBtn=document.createElement('button'); delBtn.className='btn btn--small'; delBtn.textContent='Delete';
+      delBtn.addEventListener('click',e=>{ e.stopPropagation(); deleteItem(it.id); });
+      ops.appendChild(editBtn); ops.appendChild(delBtn);
+    }
+    if(it.contact && it.contact.trim()){
+      const priv=document.createElement('div'); priv.className='hint'; priv.textContent='X ID saved privately 🔒';
+      left.appendChild(priv);
+    }
+    row.appendChild(left); row.appendChild(ops);
+    list.appendChild(row);
+  }
+}
+function addGB(name,msg,contact){
+  const entry={id:genId(), name, msg, contact, ts:Date.now(), likes:0};
+  gb.push(entry); meIds.add(entry.id);
+  saveJson(GB_KEY,gb); saveJson(GB_MY,[...meIds]); renderGB();
+}
+function editItem(id){
+  const i=gb.findIndex(x=>x.id===id); if(i<0) return;
+  const cur=gb[i]; const next=prompt('메시지를 수정하세요:', cur.msg);
+  if(next==null) return; const v=next.trim();
+  if(v.length<2){ alert('2자 이상 입력해주세요.'); return; }
+  gb[i].msg=v; gb[i].ts=Date.now(); saveJson(GB_KEY,gb); renderGB();
+}
+function deleteItem(id){
+  if(!confirm('정말 삭제할까요?')) return;
+  gb=gb.filter(x=>x.id!==id); meIds.delete(id); liked.delete(id);
+  saveJson(GB_KEY,gb); saveJson(GB_MY,[...meIds]); saveJson(GB_LIK,[...liked]); renderGB();
+}
+function toggleLike(id){
+  const i=gb.findIndex(x=>x.id===id); if(i<0) return;
+  if(liked.has(id)){ gb[i].likes=Math.max(0,(gb[i].likes||0)-1); liked.delete(id); }
+  else{ gb[i].likes=(gb[i].likes||0)+1; liked.add(id); }
+  saveJson(GB_KEY,gb); saveJson(GB_LIK,[...liked]); renderGB();
+}
+$('#gbForm').addEventListener('submit', e=>{
+  e.preventDefault();
+  const name=$('#gbName').value.trim();
+  const msg=$('#gbMsg').value.trim();
+  const contact=$('#gbContact').value.trim();
+  if(name.length<1 || msg.length<2){ alert('닉네임과 2자 이상의 메시지를 입력해주세요.'); return; }
+  addGB(name,msg,contact); e.target.reset();
+});
+renderGB();
+
+/* ===== Mini Game: 💚 runner vs 💀 (점수 기반 난이도 + 1:1 이모지 + 가로겹침방지) ===== */
+(function(){
+  const CAN = $('#gameCanvas');
+  const CTX = CAN.getContext('2d');
+  const AREA = $('#gameArea');
+  const OVL = $('#gameOverlay');
+  const OVLSCORE = $('#gameOverScore');
+  const BTN_START = $('#btnStart');
+  const BTN_PAUSE = $('#btnPause');
+  const BTN_RESUME = $('#btnResume');
+  const BTN_RESTART = $('#btnRestart');
+  const CUR = $('#gCur');
+  const TOAST = $('#levelToast');
+  const NAME_IN = $('#rankName');
+  const BTN_SAVE = $('#btnSaveScore');
+  const RANK = $('#gRank');
+  const BTN_CLEAR = $('#btnClearRank');
+
+  const K_TOP5 = 'vrc_jing_game_top5';
+
+  /* 고정 월드 좌표 (렌더는 스케일링) */
+  const BASE_W=800, BASE_H=300;
+  let W=BASE_W, H=BASE_H, GROUND=BASE_H-36;
+
+  const TILE=36;                          // 이모지 타일 박스
+  const GRAV=2200, JUMPV=780, COYOTE=0.10;
+
+  let started=false, running=false, paused=false, over=false;
+  let last=0, score=0, spawnTimer=0;
+  let player, obs=[];                     // {x, units(1|2), w, counted}
+  let prevTier = 0;
+  let lastScore = 0;
+  let lastSpawnX = BASE_W;                // 가로 겹침 방지 기준
+
+  /* === Emoji baseline fix ====================== */
+  const EMOJI_FONT = '34px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji","Noto Sans KR",sans-serif';
+  CTX.font = EMOJI_FONT;
+  CTX.textBaseline = 'alphabetic';
+  const _m = CTX.measureText('💚');
+  const EM_ASC = _m.actualBoundingBoxAscent || 26;
+  const EM_DESC = _m.actualBoundingBoxDescent || 6;
+  // bottomY 기준으로 정확히 붙여그리기
+  function drawEmoji(ch, x, bottomY){
+    CTX.font = EMOJI_FONT;
+    CTX.textBaseline = 'alphabetic';
+    CTX.fillText(ch, x, bottomY - EM_DESC);
+  }
+  /* ============================================ */
+
+  /* 캔버스 리사이즈 (DPR/반응형, 가로·세로 동일 스케일) */
+  function resizeCanvas(){
+    const dpr = window.devicePixelRatio || 1;
+    const cssW = CAN.clientWidth;
+    const cssH = CAN.clientHeight;     // aspect-ratio 로 보장됨
+    const scale = cssW / BASE_W;
+    CAN.width  = Math.round(cssW * dpr);
+    CAN.height = Math.round(cssH * dpr);
+    CTX.setTransform(scale * dpr, 0, 0, scale * dpr, 0, 0);
+    W=BASE_W; H=BASE_H; GROUND=BASE_H-36;
+  }
+  window.addEventListener('resize', resizeCanvas);
+
+  function reset(){
+    player={ x:80, y:GROUND-TILE, w:TILE-4, h:TILE-4, vy:0, onGround:true, sinceGround:0 };
+    obs=[]; spawnTimer=0; score=0; over=false; paused=false; prevTier=0; lastSpawnX=BASE_W;
+    CUR.textContent='0'; OVL.style.display='none';
+    BTN_RESUME.style.display='none'; BTN_PAUSE.style.display='';
+    BTN_SAVE.disabled = true;
+  }
+
+  /* === 점수 기반 난이도 === */
+  function getTier(){ return Math.floor(score/10); }
+  function rand(min,max){ return min + Math.random()*(max-min); }
+  function jitter(base,range){ const f=1 + (Math.random()*2*range - range); return base*f; }
+  function speedByScore(){ const t=getTier(); return Math.min(260*(1+0.08*t), 560); }
+  function spawnIntervalByScore(){ const t=getTier(); const shrink=Math.max(0.55,1-0.07*t); return jitter(1.50*shrink,0.30); }
+  function probDoubleByScore(){ const t=getTier(); return Math.min(0.08+0.03*t, 0.50); }
+
+  function start(){
+    if(started && !over) return;
+    started=true; running=true; last=performance.now();
+    resizeCanvas();
+    reset(); requestAnimationFrame(tick);
+  }
+  function pause(){ if(!running||over||paused) return; paused=true; running=false; BTN_RESUME.style.display=''; BTN_PAUSE.style.display='none'; }
+  function resume(){ if(!started||over||!paused) return; paused=false; running=true; BTN_RESUME.style.display='none'; BTN_PAUSE.style.display=''; last=performance.now(); requestAnimationFrame(tick); }
+  function restart(){ reset(); running=true; last=performance.now(); requestAnimationFrame(tick); }
+
+  function tick(now){
+    if(!running) return;
+    const dt = Math.min(0.05, (now-last)/1000);
+    last=now;
+    update(dt); draw();
+    requestAnimationFrame(tick);
+  }
+
+  function update(dt){
+    const tierNow=getTier();
+    if(tierNow>prevTier){
+      prevTier=tierNow;
+      TOAST.textContent=`Level Up! Lv.${tierNow}`;
+      TOAST.style.display='block';
+      setTimeout(()=>TOAST.style.display='none',900);
+    }
+
+    // 물리
+    player.vy += GRAV*dt; player.y += player.vy*dt;
+    if(player.y >= GROUND - player.h){ player.y = GROUND - player.h; player.vy = 0; player.onGround=true; player.sinceGround=0; }
+    else{ player.onGround=false; player.sinceGround+=dt; }
+
+    // 스폰
+    spawnTimer -= dt;
+    if(spawnTimer<=0){
+      spawnObstacle();
+      spawnTimer = spawnIntervalByScore();
+    }
+
+    // 이동/스코어
+    const v = speedByScore();
+    for(const o of obs){
+      o.x -= v*dt;
+      if(!o.counted && o.x + o.w < player.x){
+        o.counted = true;
+        score += 1;
+        CUR.textContent = String(score);
+      }
+    }
+    obs = obs.filter(o=>o.x + o.w > -60);
+
+    // 충돌 (각 유닛과 AABB)
+    for(const o of obs){
+      for(let k=0;k<o.units;k++){
+        const rx = o.x;
+        const ry = GROUND - (k+1)*(TILE-2);
+        const rw = TILE-6, rh = TILE-6;
+        if(overlap(player.x,player.y,player.w,player.h, rx,ry,rw,rh)){ gameOver(); return; }
+      }
+    }
+  }
+
+  function overlap(x1,y1,w1,h1,x2,y2,w2,h2){
+    return (x1 < x2+w2 && x1+w1 > x2 && y1 < y2+h2 && y1+h1 > y2);
+  }
+
+  /* 가로 겹침 방지: 최소 가로 간격 보장 + 같은 x에서만 세로 스택 */
+  function spawnObstacle(){
+    const t=getTier();
+
+    pushOne(); // 기본 1개
+
+    // 레벨이 오를수록 군집 스폰 확률↑
+    const clusterChance = Math.min(0.20 + 0.06*t, 0.70);
+    const extraCount = Math.random() < clusterChance ? (Math.random() < 0.35 ? 2 : 1) : 0;
+
+    for(let i=0;i<extraCount;i++){
+      const maxGap = Math.max(120, 220 - 12*t);
+      const minGap = Math.max(70,  150 - 10*t);
+      const gap = rand(minGap, maxGap);
+      pushOne(gap);
+    }
+
+    function pushOne(offset=0){
+      const minSep = TILE + 10;             // 최소 가로 간격
+      let newX = BASE_W + 30 + offset;
+      if (newX - lastSpawnX < minSep) newX = lastSpawnX + minSep; // 겹침 보정
+      const units = (Math.random() < probDoubleByScore()) ? 2 : 1; // 1 or 2(세로스택)
+      obs.push({ x:newX, w:TILE, units, counted:false });
+      lastSpawnX = newX;
+    }
+  }
+
+  function draw(){
+    CTX.clearRect(0,0,BASE_W,BASE_H);
+    // 배경/바닥
+    CTX.fillStyle='#f7fff7'; CTX.fillRect(0,0,BASE_W,BASE_H);
+    CTX.fillStyle='#dfe9dc'; CTX.fillRect(0,GROUND,BASE_W,BASE_H-GROUND);
+
+    // 플레이어 💚 — bottomY = player.y + player.h
+    drawEmoji('💚', player.x, player.y + player.h);
+
+    // 장애물 💀 — 각 유닛 bottomY 정확히 접지
+    for(const o of obs){
+      for(let k=0;k<o.units;k++){
+        const topY   = GROUND - (k+1)*(TILE-2);
+        const bottom = topY + (TILE-2);
+        drawEmoji('💀', o.x, bottom);
+      }
+    }
+  }
+
+  function jump(){
+    if(over || !started) return;
+    if(player.onGround || player.sinceGround <= COYOTE){
+      player.vy = -JUMPV; player.onGround=false;
+    }
+  }
+
+  function gameOver(){
+    over=true; running=false;
+    lastScore = score;
+    OVLSCORE.textContent = 'Score ' + score;
+    OVL.style.display='flex';
+    BTN_SAVE.disabled = false;
+  }
+
+  /* TOP 5 저장 (닉네임-점수, 같은 닉네임 1개 유지) */
+  function loadTop5(){ return loadJson(K_TOP5, []); }
+  function saveTop5(arr){ saveJson(K_TOP5, arr); renderTop5(); }
+  function renderTop5(){
+    const arr = loadTop5().sort((a,b)=>b.score-a.score).slice(0,5);
+    RANK.innerHTML = '';
+    arr.forEach(item=>{
+      const li = document.createElement('li');
+      li.textContent = `${item.name} - ${item.score}`;
+      RANK.appendChild(li);
+    });
+  }
+  BTN_SAVE.addEventListener('click', ()=>{
+    const name = (NAME_IN.value||'').trim();
+    if(!over){ alert('게임이 끝난 뒤에 저장할 수 있어요!'); return; }
+    if(name.length<1){ alert('닉네임을 입력해주세요.'); return; }
+    let arr = loadTop5();
+    arr = arr.filter(it => it.name !== name);    // 같은 닉네임 제거
+    arr.push({name, score:lastScore});
+    arr.sort((a,b)=>b.score-a.score);
+    arr = arr.slice(0,5);
+    saveTop5(arr);
+    BTN_SAVE.disabled = true;
+  });
+  BTN_CLEAR.addEventListener('click', ()=>{
+    if(confirm('TOP 5 기록을 모두 지울까요?')){ saveTop5([]); }
+  });
+
+  // controls & input
+  BTN_START.addEventListener('click', ()=>{ start(); });
+  BTN_RESTART.addEventListener('click', ()=>{ restart(); });
+  BTN_PAUSE.addEventListener('click', ()=>{ pause(); });
+  BTN_RESUME.addEventListener('click', ()=>{ resume(); });
+
+  AREA.addEventListener('pointerdown', e=>{
+    e.preventDefault();
+    if(!started){ start(); return; }
+    if(over||paused) return;
+    jump();
+  }, {passive:false});
+
+  window.addEventListener('keydown', e=>{
+    if(e.code==='Space' || e.code==='ArrowUp'){
+      if(!started){ start(); return; }
+      if(over||paused) return;
+      e.preventDefault(); jump();
+    }
+  });
+
+  window.addEventListener('blur', ()=>{ if(running) pause(); });
+
+  // 초기 TOP5 렌더
+  renderTop5();
+})();
+</script>
+</body>
+</html>
