@@ -90,7 +90,7 @@ h2{margin:0 0 12px;font-size:22px;letter-spacing:-.3px;font-style:italic}
 .badge{border:1px solid rgba(161,189,155,.55);padding:6px 10px;border-radius:999px;background:#eef6ed;font-weight:800;display:inline-block}
 .game .panel{display:grid;gap:10px}
 
-/* 비율 고정 + 고해상도 렌더 준비 */
+/* 비율 고정 + 고해상도 준비 */
 .game-area{position:relative; border:1px solid var(--line); border-radius:16px; overflow:hidden; background:linear-gradient(180deg,#f7fff7,#ffffff); box-shadow:inset 0 0 0 1px rgba(161,189,155,.12)}
 #gameCanvas{width:100%; height:auto; aspect-ratio: 8 / 3; display:block}
 .game-overlay{position:absolute; inset:0; display:none; align-items:center; justify-content:center; flex-direction:column; gap:10px; background:rgba(252,255,252,.6); backdrop-filter: blur(2px)}
@@ -99,6 +99,27 @@ h2{margin:0 0 12px;font-size:22px;letter-spacing:-.3px;font-style:italic}
 /* Footer & hearts */
 .footer{max-width:1100px;margin:28px auto 40px;color:var(--muted);display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:0 20px}
 .heart{position:fixed;left:0;top:0;pointer-events:none;z-index:1000;font-size:20px;transform:translate(-50%,-50%) scale(1);opacity:1;will-change:transform,opacity,left,top}
+
+/* === Mobile fix: About 반응형 + 한글 줄바꿈 개선 === */
+:root{ --about-left-lg:360px; --about-left-md:280px; }
+/* 데스크탑 */
+.about-wide{ grid-template-columns: var(--about-left-lg) 1fr; }
+/* 태블릿 */
+@media (max-width: 960px){
+  .about-wide{ grid-template-columns: var(--about-left-md) 1fr; }
+}
+/* 모바일: 한 열로 스택 */
+@media (max-width: 680px){
+  .about-wide{ grid-template-columns: 1fr; }
+  .about-photo{ height: 260px; }
+  .kv{ grid-template-columns: 120px 1fr; }
+  .about-title h1{ font-size:22px; }
+}
+/* 한글 자연스러운 줄바꿈 */
+body, .kv, .gb-msg, .pills, .hint, li{
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
 </style>
 </head>
 <body>
@@ -429,7 +450,7 @@ $('#gbForm').addEventListener('submit', e=>{
 });
 renderGB();
 
-/* ===== Mini Game: 💚 runner vs 💀 (점수 기반 난이도 + 1:1 이모지 + 가로겹침방지) ===== */
+/* ===== Mini Game: 💚 runner vs 💀 (점수 난이도 + 1:1 이모지 + 가로겹침방지) ===== */
 (function(){
   const CAN = $('#gameCanvas');
   const CTX = CAN.getContext('2d');
@@ -449,40 +470,38 @@ renderGB();
 
   const K_TOP5 = 'vrc_jing_game_top5';
 
-  /* 고정 월드 좌표 (렌더는 스케일링) */
+  /* 고정 월드 좌표 */
   const BASE_W=800, BASE_H=300;
   let W=BASE_W, H=BASE_H, GROUND=BASE_H-36;
 
-  const TILE=36;                          // 이모지 타일 박스
+  const TILE=36;
   const GRAV=2200, JUMPV=780, COYOTE=0.10;
 
   let started=false, running=false, paused=false, over=false;
   let last=0, score=0, spawnTimer=0;
-  let player, obs=[];                     // {x, units(1|2), w, counted}
+  let player, obs=[];
   let prevTier = 0;
   let lastScore = 0;
-  let lastSpawnX = BASE_W;                // 가로 겹침 방지 기준
+  let lastSpawnX = BASE_W;
 
-  /* === Emoji baseline fix ====================== */
+  /* === Emoji baseline fix === */
   const EMOJI_FONT = '34px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji","Noto Sans KR",sans-serif';
   CTX.font = EMOJI_FONT;
   CTX.textBaseline = 'alphabetic';
   const _m = CTX.measureText('💚');
   const EM_ASC = _m.actualBoundingBoxAscent || 26;
   const EM_DESC = _m.actualBoundingBoxDescent || 6;
-  // bottomY 기준으로 정확히 붙여그리기
   function drawEmoji(ch, x, bottomY){
     CTX.font = EMOJI_FONT;
     CTX.textBaseline = 'alphabetic';
     CTX.fillText(ch, x, bottomY - EM_DESC);
   }
-  /* ============================================ */
 
-  /* 캔버스 리사이즈 (DPR/반응형, 가로·세로 동일 스케일) */
+  /* 캔버스 리사이즈 (DPR/반응형) */
   function resizeCanvas(){
     const dpr = window.devicePixelRatio || 1;
     const cssW = CAN.clientWidth;
-    const cssH = CAN.clientHeight;     // aspect-ratio 로 보장됨
+    const cssH = CAN.clientHeight;
     const scale = cssW / BASE_W;
     CAN.width  = Math.round(cssW * dpr);
     CAN.height = Math.round(cssH * dpr);
@@ -499,7 +518,7 @@ renderGB();
     BTN_SAVE.disabled = true;
   }
 
-  /* === 점수 기반 난이도 === */
+  /* 점수 기반 난이도 */
   function getTier(){ return Math.floor(score/10); }
   function rand(min,max){ return min + Math.random()*(max-min); }
   function jitter(base,range){ const f=1 + (Math.random()*2*range - range); return base*f; }
@@ -558,7 +577,7 @@ renderGB();
     }
     obs = obs.filter(o=>o.x + o.w > -60);
 
-    // 충돌 (각 유닛과 AABB)
+    // 충돌 체크
     for(const o of obs){
       for(let k=0;k<o.units;k++){
         const rx = o.x;
@@ -573,13 +592,12 @@ renderGB();
     return (x1 < x2+w2 && x1+w1 > x2 && y1 < y2+h2 && y1+h1 > y2);
   }
 
-  /* 가로 겹침 방지: 최소 가로 간격 보장 + 같은 x에서만 세로 스택 */
+  /* 가로 겹침 방지 + 같은 x에서만 세로 스택 */
   function spawnObstacle(){
     const t=getTier();
 
     pushOne(); // 기본 1개
 
-    // 레벨이 오를수록 군집 스폰 확률↑
     const clusterChance = Math.min(0.20 + 0.06*t, 0.70);
     const extraCount = Math.random() < clusterChance ? (Math.random() < 0.35 ? 2 : 1) : 0;
 
@@ -591,10 +609,10 @@ renderGB();
     }
 
     function pushOne(offset=0){
-      const minSep = TILE + 10;             // 최소 가로 간격
+      const minSep = TILE + 10;
       let newX = BASE_W + 30 + offset;
-      if (newX - lastSpawnX < minSep) newX = lastSpawnX + minSep; // 겹침 보정
-      const units = (Math.random() < probDoubleByScore()) ? 2 : 1; // 1 or 2(세로스택)
+      if (newX - lastSpawnX < minSep) newX = lastSpawnX + minSep;
+      const units = (Math.random() < probDoubleByScore()) ? 2 : 1; // 세로로만 쌓기
       obs.push({ x:newX, w:TILE, units, counted:false });
       lastSpawnX = newX;
     }
@@ -606,10 +624,10 @@ renderGB();
     CTX.fillStyle='#f7fff7'; CTX.fillRect(0,0,BASE_W,BASE_H);
     CTX.fillStyle='#dfe9dc'; CTX.fillRect(0,GROUND,BASE_W,BASE_H-GROUND);
 
-    // 플레이어 💚 — bottomY = player.y + player.h
+    // 플레이어 💚 — 발바닥이 바닥선에 정확히
     drawEmoji('💚', player.x, player.y + player.h);
 
-    // 장애물 💀 — 각 유닛 bottomY 정확히 접지
+    // 장애물 💀 — 각 유닛 bottomY 맞춰 접지
     for(const o of obs){
       for(let k=0;k<o.units;k++){
         const topY   = GROUND - (k+1)*(TILE-2);
@@ -629,8 +647,8 @@ renderGB();
   function gameOver(){
     over=true; running=false;
     lastScore = score;
-    OVLSCORE.textContent = 'Score ' + score;
     OVL.style.display='flex';
+    document.getElementById('gameOverScore').textContent = 'Score ' + score;
     BTN_SAVE.disabled = false;
   }
 
@@ -651,7 +669,7 @@ renderGB();
     if(!over){ alert('게임이 끝난 뒤에 저장할 수 있어요!'); return; }
     if(name.length<1){ alert('닉네임을 입력해주세요.'); return; }
     let arr = loadTop5();
-    arr = arr.filter(it => it.name !== name);    // 같은 닉네임 제거
+    arr = arr.filter(it => it.name !== name);
     arr.push({name, score:lastScore});
     arr.sort((a,b)=>b.score-a.score);
     arr = arr.slice(0,5);
@@ -685,7 +703,6 @@ renderGB();
 
   window.addEventListener('blur', ()=>{ if(running) pause(); });
 
-  // 초기 TOP5 렌더
   renderTop5();
 })();
 </script>
