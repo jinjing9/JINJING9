@@ -3,708 +3,706 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>VRC트친소 | 진징구</title>
-<meta name="theme-color" content="#a1bd9b" />
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.85em%22 font-size=%2285%22>💚</text></svg>">
+<title>Slime Maker</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;800&display=swap" rel="stylesheet">
+
 <style>
 :root{
-  --main:#a1bd9b; --sub:#FAFFFA;
-  --ink:#1F2C23; --muted:#5E6F61;
-  --card:#FFFFFF; --line:rgba(33,52,39,.12); --soft:rgba(161,189,155,.20);
-  --r:18px; --shadow:0 10px 30px rgba(32,52,38,.07); --gap:22px;
+  --ink:#2c2c2c;
+  --panel:#ffffff;
+  --line:#e6e6e6;
+  --accent:#a1bd9b;      /* 포인트 컬러 */
+  --muted:#b9bfc6;       /* 음수/보조 */
+  --shadow:0 10px 26px rgba(0,0,0,.08);
+  --radius:14px;
 }
-*{box-sizing:border-box}
+
+/* 어두운 체크무늬 배경 (무채색) */
 html,body{height:100%}
+*{box-sizing:border-box}
 body{
-  margin:0; color:var(--ink);
-  font-family:'Noto Sans KR', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-  letter-spacing:-.2px;
+  margin:0;
   background:
-    radial-gradient(800px 300px at 90% -10%, rgba(161,189,155,.16), transparent 60%),
-    radial-gradient(600px 280px at 10% 110%, rgba(161,189,155,.14), transparent 60%),
-    var(--sub);
+    radial-gradient(900px 600px at -15% -20%, rgba(255,255,255,.03) 0%, transparent 60%),
+    radial-gradient(900px 600px at 115% 0%, rgba(255,255,255,.03) 0%, transparent 55%),
+    repeating-linear-gradient(45deg, #1d1d1d 0 12px, #222 12px 24px);
+  color:var(--ink);
+  font-family:'Noto Sans KR', system-ui, -apple-system, Segoe UI, sans-serif;
 }
 
 /* Header */
-.header{position:sticky; top:0; z-index:20; background:rgba(252,255,252,.75); backdrop-filter: blur(10px); border-bottom:1px solid var(--line)}
-.header__in{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:flex-start;padding:10px 20px;gap:12px}
-.brand{display:flex;align-items:center;gap:10px;font-weight:900}
-.brand__dot{width:12px;height:12px;border-radius:50%;background:var(--main);box-shadow:0 0 0 6px var(--soft)}
+.header{
+  position:sticky; top:0; z-index:5;
+  background:linear-gradient(180deg, rgba(0,0,0,.65), rgba(0,0,0,.5));
+  border-bottom:1px solid rgba(255,255,255,.06);
+  color:#fff;
+}
+.header-inner{
+  max-width:1100px; margin:0 auto; padding:14px 16px;
+  display:flex; align-items:flex-end; justify-content:space-between; gap:12px;
+}
+.h-title{margin:0; font-size:24px; font-weight:800; letter-spacing:.2px}
+.h-meta{display:flex; gap:10px; flex-wrap:wrap}
+.chip{
+  background:#2a2a2a; color:#fff; border:1px solid rgba(255,255,255,.08);
+  border-radius:999px; padding:8px 12px; box-shadow:0 6px 18px rgba(0,0,0,.35); font-weight:700;
+}
 
 /* Layout */
-.container{max-width:1100px;margin:0 auto;padding:20px}
-.stack{display:grid;gap:var(--gap)}
-.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:18px}
-h2{margin:0 0 12px;font-size:22px;letter-spacing:-.3px;font-style:italic}
+.container{
+  max-width:1100px; margin:18px auto 60px; padding:0 16px;
+  display:grid; grid-template-columns:1.3fr 1fr; gap:18px;
+}
+@media (max-width:980px){.container{grid-template-columns:1fr}}
 
-/* Buttons */
-.btn{appearance:none;border:1px solid rgba(161,189,155,.55); cursor:pointer;border-radius:999px; padding:9px 14px; background:#fff; color:#24422a; font-weight:800; box-shadow:0 4px 10px rgba(32,52,38,.06); transition:transform .06s ease, background .15s ease, box-shadow .2s ease}
-.btn:hover{background:#eef6ed; box-shadow:0 8px 18px rgba(32,52,38,.08)}
+.card{
+  background:var(--panel); border:1px solid var(--line);
+  border-radius:var(--radius); box-shadow:var(--shadow); padding:16px;
+}
+.card h2{margin:0 0 12px; font-size:18px; color:#1f1f1f}
+
+/* Stage */
+.stage{display:grid; grid-template-rows:auto auto 1fr; gap:14px}
+.canvas{
+  display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(180deg,#fff,#f8f8f8); border:1px solid var(--line);
+  border-radius:18px; min-height:320px; position:relative;
+}
+#slimeImg{width:min(420px, 84vw); height:auto; display:block; user-select:none}
+.toast{
+  position:absolute; left:50%; top:14px; transform:translateX(-50%);
+  background:rgba(0,0,0,.75); color:#fff; padding:8px 12px; border-radius:10px;
+  border:1px solid rgba(0,0,0,.25); display:none; max-width:calc(100% - 28px);
+  text-align:center; line-height:1.35;
+}
+
+/* Actions */
+.actions{display:grid; grid-template-columns:repeat(5,1fr); gap:10px}
+@media (max-width:860px){.actions{grid-template-columns:repeat(3,1fr)}}
+.btn{
+  appearance:none; border:none; cursor:pointer;
+  background:#fff; border:1px solid var(--line);
+  padding:12px 12px; border-radius:10px; font-weight:700; color:#2c2c2c;
+  transition:transform .05s ease, filter .15s ease; box-shadow:var(--shadow);
+}
+.btn:hover{filter:brightness(1.03)}
 .btn:active{transform:translateY(1px)}
-.btn--small{padding:7px 12px; font-weight:700}
+.btn[disabled]{opacity:.5; cursor:not-allowed}
+.btn-primary{background:var(--accent); color:#0f2b1f; border-color:#93b28e}
 
-/* Inputs */
-.input,.textarea,.select{width:100%;border-radius:12px;border:1px solid var(--line);padding:10px 12px;font:inherit;background:#fff;transition:box-shadow .2s,border-color .2s}
-.input:focus,.textarea:focus,.select:focus{outline:none;border-color: var(--main); box-shadow:0 0 0 4px var(--soft)}
-.textarea{min-height:120px;resize:vertical}
+/* Controls */
+.controls{display:flex; gap:10px; flex-wrap:wrap}
+.controls .btn{min-width:120px}
 
-/* About */
-.about-wide{display:grid;grid-template-columns:360px 1fr;gap:18px;align-items:stretch;background:linear-gradient(180deg,#ffffff,#f7fff7 70%)}
-.about-photo{border-radius:16px;overflow:hidden;border:1px solid var(--line);background:#f1fff1;display:block}
-.about-photo img{width:100%;height:100%;object-fit:cover;display:block}
-.kv{display:grid;grid-template-columns:140px 1fr;gap:8px 12px;font-size:15px}
-.k{color:var(--muted)} .v{font-weight:800}
-.about-title{margin-bottom:6px}
-.about-title h1{margin:0;font-size:26px;letter-spacing:-.6px;font-style:italic}
-.about-title .sub{color:var(--muted);font-weight:500;margin-top:6px}
+/* Status & Log */
+.stat-row{display:grid; grid-template-columns:92px 1fr 72px; align-items:center; gap:10px; margin-bottom:10px}
+.stat-label{font-size:13px; color:#5b5b5b}
 
-/* Prefs */
-.prefbox .grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-.prefbox .title{font-weight:900;margin-bottom:8px;font-style:italic}
-.pills{display:flex;flex-wrap:wrap;gap:10px}
-.pill{padding:9px 12px;border-radius:999px;background:#eef6f0;border:1px solid rgba(161,189,155,.50);font-size:13px}
-
-/* Guestbook */
-.gb-wrap{display:grid;grid-template-columns:420px 1fr;gap:20px}
-@media(max-width:980px){ .gb-wrap{grid-template-columns:1fr} }
-.seg{display:flex;gap:8px;margin-bottom:10px}
-.seg .btn[aria-pressed="true"]{background:#e7f3e6}
-.gb-list{display:grid;gap:12px}
-.gb-item{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;display:grid;grid-template-columns:1fr auto;gap:8px}
-.gb-name{font-weight:900}
-.gb-msg{white-space:pre-wrap}
-.gb-meta{font-size:12px;color:var(--muted)}
-
-/* Gallery */
-.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
-.thumb{position:relative;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:#f4fff4}
-.thumb img{width:100%;height:200px;object-fit:cover;display:block}
-.thumb .cap{position:absolute;left:8px;bottom:8px;right:8px;background:rgba(0,0,0,.45);color:#fff;font-size:12px;padding:6px 8px;border-radius:8px}
-.thumb .del{position:absolute;top:8px;right:8px}
-
-/* Mini Game */
-.game h2{display:flex;align-items:center;gap:10px}
-.game-wrap{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:18px;align-items:start}
-@media(max-width:980px){ .game-wrap{grid-template-columns:1fr} }
-.badge{border:1px solid rgba(161,189,155,.55);padding:6px 10px;border-radius:999px;background:#eef6ed;font-weight:800;display:inline-block}
-.game .panel{display:grid;gap:10px}
-
-/* 비율 고정 + 고해상도 준비 */
-.game-area{position:relative; border:1px solid var(--line); border-radius:16px; overflow:hidden; background:linear-gradient(180deg,#f7fff7,#ffffff); box-shadow:inset 0 0 0 1px rgba(161,189,155,.12)}
-#gameCanvas{width:100%; height:auto; aspect-ratio: 8 / 3; display:block}
-.game-overlay{position:absolute; inset:0; display:none; align-items:center; justify-content:center; flex-direction:column; gap:10px; background:rgba(252,255,252,.6); backdrop-filter: blur(2px)}
-.toast{position:absolute;top:12px;left:50%;transform:translateX(-50%);padding:6px 12px;border-radius:999px;background:#e7f3e6;border:1px solid rgba(161,189,155,.55);font-weight:900;display:none}
-
-/* Footer & hearts */
-.footer{max-width:1100px;margin:28px auto 40px;color:var(--muted);display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:0 20px}
-.heart{position:fixed;left:0;top:0;pointer-events:none;z-index:1000;font-size:20px;transform:translate(-50%,-50%) scale(1);opacity:1;will-change:transform,opacity,left,top}
-
-/* === Mobile fix: About 반응형 + 한글 줄바꿈 개선 === */
-:root{ --about-left-lg:360px; --about-left-md:280px; }
-/* 데스크탑 */
-.about-wide{ grid-template-columns: var(--about-left-lg) 1fr; }
-/* 태블릿 */
-@media (max-width: 960px){
-  .about-wide{ grid-template-columns: var(--about-left-md) 1fr; }
+/* 듀얼바: 중앙 0, 좌(−)=무채색 / 우(+)=포인트 단색 */
+.dual{
+  height:14px; background:#ededed; border:1px solid #e3e3e3; border-radius:999px; position:relative; overflow:hidden
 }
-/* 모바일: 한 열로 스택 */
-@media (max-width: 680px){
-  .about-wide{ grid-template-columns: 1fr; }
-  .about-photo{ height: 260px; }
-  .kv{ grid-template-columns: 120px 1fr; }
-  .about-title h1{ font-size:22px; }
-}
-/* 한글 자연스러운 줄바꿈 */
-body, .kv, .gb-msg, .pills, .hint, li{
-  word-break: keep-all;
-  overflow-wrap: anywhere;
-}
+.dual .mid{position:absolute; left:50%; top:0; bottom:0; width:1px; background:#d8d8d8}
+.dual .neg{position:absolute; right:50%; top:0; bottom:0; width:0; background:var(--muted)}
+.dual .pos{position:absolute; left:50%; top:0; bottom:0; width:0; background:var(--accent)}
+.stat-val{text-align:right; font-size:13px; color:#4a4a4a}
+
+.log-wrap{margin-top:12px}
+.log-title{margin:10px 0 8px; font-weight:700; color:#2b2b2b}
+.log{min-height:80px; max-height:220px; overflow:auto; border:1px dashed #e0e0e0; border-radius:12px; padding:10px; background:#fafafa}
+.log p{margin:0 0 8px; font-size:14px}
+
+/* Image animations */
+@keyframes jump{0%{transform:translateY(0)}40%{transform:translateY(-14px)}100%{transform:translateY(0)}}
+@keyframes flash{0%,100%{opacity:1}50%{opacity:.25}}
+@keyframes shake{10%,90%{transform:translateX(-2px)}20%,80%{transform:translateX(3px)}30%,50%,70%{transform:translateX(-6px)}40%,60%{transform:translateX(6px)}}
+@keyframes tilt{0%{transform:rotate(0)}50%{transform:rotate(-4deg)}100%{transform:rotate(0)}}
+@keyframes breathe{0%{transform:translateY(0)}50%{transform:translateY(-6px)}100%{transform:translateY(0)}}
+.anim-jump{animation:jump .45s ease}
+.anim-flash{animation:flash .45s ease}
+.anim-shake{animation:shake .45s ease-in-out}
+.anim-tilt{animation:tilt .45s ease}
+.anim-breathe{animation:breathe .7s ease}
+
+/* Modals (Ending / Event 공통) */
+.modal{position:fixed; inset:0; background:rgba(0,0,0,.45); display:none; align-items:center; justify-content:center; padding:20px; z-index:10}
+.modal.active{display:flex}
+.modal-card{width:min(620px,94vw); background:var(--panel); border:1px solid var(--line); border-radius:14px; box-shadow:var(--shadow); padding:20px}
+.modal-card h3{margin:0 0 8px; font-size:20px; color:#1f1f1f}
+.modal-card p{margin:8px 0 16px; color:#4a4a4a}
+.modal-actions{display:flex; gap:10px; justify-content:flex-end; margin-top:10px}
+#endingImg{display:block; max-width:280px; height:auto; margin:8px auto 0}
 </style>
 </head>
 <body>
 
 <header class="header">
-  <div class="header__in">
-    <div class="brand">
-      <span class="brand__dot"></span>
-      <span>VRC트친소 | 진징구</span>
+  <div class="header-inner">
+    <h1 class="h-title">Slime Maker</h1>
+    <div class="h-meta">
+      <div class="chip">Day <b id="hudDay">1</b> / 30</div>
+      <div class="chip">Actions <b id="hudAct">0</b> / 3</div>
     </div>
   </div>
 </header>
 
-<div class="container stack">
-  <!-- About -->
-  <section class="card about-wide" id="about" aria-label="About">
-    <a class="about-photo" href="#" onclick="openLightbox('https://pbs.twimg.com/media/GxX3xjQaYAAlouw?format=jpg&amp;name=900x900','');return false;">
-      <img src="https://pbs.twimg.com/media/GxX3xjQaYAAlouw?format=jpg&amp;name=900x900" alt="Profile image">
-    </a>
-    <div>
-      <div class="about-title">
-        <h1>VRC트친소 | 진징구</h1>
-        <div class="sub">One-liner: 17살 9주년 마법소녀 여고생</div>
-      </div>
-      <div class="kv" aria-label="Profile information" style="margin-top:12px">
-        <div class="k">Nickname</div><div class="v">진징구</div>
-        <div class="k">Active Time</div><div class="v">랜덤</div>
-        <div class="k">Play Type</div><div class="v">가끔 묵언(귀찮음 이슈), 반트</div>
-        <div class="k">Language</div><div class="v">0개국어</div>
-      </div>
-      <ul style="margin:14px 0 0;padding-left:18px;line-height:1.75">
-        <li>방명록이나 마음남겨주세요!╰(*°▽°*)╯</li>
-        <li>낯가림이 좀 있어서 교류? 소통은 조금 어려울 수도 있습니다</li>
-        <li>어 나도 그런데..? 하시는분들은 우리 서로 하트만 눌러주게요(^///^)</li>
-        <li>고양이 좋아 사람 싫어 하지만 너는빼고&lt; 부류의 사람입니다</li>
-        <li>소심하고 귀여운 사람을 좋아해요 시끄러운거 싫어해요</li>
-        <li>천천히 다가와주세요 아니면 귀여워주세요.</li>
-        <li>그렇다고 귀여운척은 안됩니다 사람이 귀여워야해요.</li>
-        <li>말이 많다구요? 기나죄 (기분나쁘셧으면 죄송하다는뜻ㅎ)</li>
-        <li>고양이 두마리, 연하남과 동거중이라 가끔 고양이, 사람소리가 마이크 너머로 들립니다</li>
-        <li>끝!</li>
-      </ul>
+<main class="container">
+  <!-- LEFT: Stage -->
+  <section class="card stage">
+    <h2>Stage</h2>
+    <div class="canvas">
+      <img id="slimeImg" alt="slime"/>
+      <div class="toast" id="toast"></div>
     </div>
-  </section>
 
-  <!-- Prefs -->
-  <section class="card prefbox" aria-label="Preferences and Avoid">
-    <div class="grid">
-      <div>
-        <div class="title">Preferences</div>
-        <div class="pills">
-          <span class="pill">월드 탐방</span>
-          <span class="pill">사진</span>
-          <span class="pill">뇌 빼고 수다떨기</span>
-        </div>
+    <div class="card" style="padding:14px">
+      <h2 style="margin-bottom:10px">Actions</h2>
+      <div class="actions">
+        <button class="btn" data-act="운동">운동</button>
+        <button class="btn" data-act="유니티">유니티</button>
+        <button class="btn" data-act="일">일</button>
+        <button class="btn" data-act="독서">독서</button>
+        <button class="btn" data-act="VRC">VRC</button>
       </div>
-      <div>
-        <div class="title">Avoid</div>
-        <div class="pills">
-          <span class="pill">과한 관심</span>
-          <span class="pill">사회성 낮은사람</span>
-        </div>
+      <div class="controls" style="margin-top:12px">
+        <button class="btn btn-primary" id="nextBtn">다음 날 ▶</button>
+        <button class="btn" id="resetDayBtn">다시하기</button>
+        <button class="btn" id="resetAllBtn">처음부터</button>
       </div>
     </div>
   </section>
 
-  <!-- Guestbook -->
-  <section class="card" id="guestbook" aria-label="Guestbook">
-    <h2>Guestbook</h2>
-    <div class="gb-wrap">
-      <div class="gb-left">
-        <div class="seg" role="tablist" aria-label="Sort messages">
-          <button class="btn btn--small" id="sortLatest" aria-pressed="true" data-sort="latest">Latest</button>
-          <button class="btn btn--small" id="sortLikes"  aria-pressed="false" data-sort="likes">Most Liked</button>
-        </div>
-        <form id="gbForm" class="gb-form" autocomplete="off">
-          <div>
-            <label for="gbName">Nickname*</label>
-            <input id="gbName" class="input" required maxlength="24" placeholder="닉네임">
-          </div>
-          <div>
-            <label for="gbContact">X ID</label>
-            <input id="gbContact" class="input" maxlength="40" placeholder="@handle">
-          </div>
-          <div>
-            <label for="gbMsg">Message*</label>
-            <textarea id="gbMsg" class="textarea" required minlength="2" maxlength="500" rows="4" placeholder="한 줄 남겨주세요 💚"></textarea>
-          </div>
-          <button class="btn" type="submit">Submit</button>
-          <p class="hint" style="margin-top:8px">X ID는 저장만 되고 공개되지 않아요.</p>
-        </form>
-      </div>
-      <div class="gb-right">
-        <div id="gbList" class="gb-list" aria-live="polite"></div>
-        <p class="hint">Tip: 항목 클릭 후 <b>E</b> = 수정, <b>Delete</b> = 삭제 (내 브라우저에서 작성한 글만).</p>
-      </div>
+  <!-- RIGHT: Status & Log -->
+  <aside class="card">
+    <h2>Status</h2>
+
+    <!-- 듀얼바 5종 -->
+    <div class="stat-row">
+      <div class="stat-label">체력</div>
+      <div class="dual"><span class="mid"></span><span class="neg" id="neg-hp"></span><span class="pos" id="pos-hp"></span></div>
+      <div class="stat-val" id="val-hp">0</div>
     </div>
-  </section>
-
-  <!-- Gallery -->
-  <section class="card" id="gallery" aria-label="Gallery">
-    <h2>Gallery</h2>
-    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px">
-      <input class="input" type="file" id="fileInput" accept="image/*" multiple aria-label="Upload images">
-      <span class="hint">최대 6장 저장 · 새로 추가되면 가장 오래된 사진이 삭제돼요</span>
+    <div class="stat-row">
+      <div class="stat-label">지능</div>
+      <div class="dual"><span class="mid"></span><span class="neg" id="neg-iq"></span><span class="pos" id="pos-iq"></span></div>
+      <div class="stat-val" id="val-iq">0</div>
     </div>
-    <div id="galleryGrid" class="gallery" aria-live="polite"></div>
-  </section>
-
-  <!-- Mini Game -->
-  <section class="card game" id="game" aria-label="Mini Game">
-    <h2>Mini Game</h2>
-    <div class="game-wrap">
-      <div class="game-area" id="gameArea" data-noparticle>
-        <canvas id="gameCanvas" width="800" height="300" aria-label="emoji runner game"></canvas>
-        <div class="game-overlay" id="gameOverlay" aria-live="polite">
-          <div style="font-weight:900">Game Over</div>
-          <div id="gameOverScore" class="badge">Score 0</div>
-          <button class="btn" id="btnRestart">Restart</button>
-          <div class="hint">닉네임 입력 후 <b>Save Score</b>를 눌러 저장해요.</div>
-        </div>
-        <div class="toast" id="levelToast">Level Up!</div>
-      </div>
-      <div class="panel">
-        <div class="badge">Score <span id="gCur">0</span></div>
-
-        <div>
-          <label for="rankName">Nickname</label>
-          <input id="rankName" class="input" placeholder="닉네임(최대 12자)" maxlength="12" autocomplete="off">
-        </div>
-        <button class="btn" id="btnSaveScore" disabled>Save Score</button>
-
-        <h3 style="margin:8px 0 0">TOP 5</h3>
-        <ol id="gRank" style="margin:0;padding-left:18px"></ol>
-
-        <div class="controls" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
-          <button class="btn" id="btnStart">Start</button>
-          <button class="btn btn--small" id="btnPause">Pause</button>
-          <button class="btn btn--small" id="btnResume" style="display:none">Resume</button>
-          <button class="btn btn--small" id="btnClearRank">Clear TOP 5</button>
-        </div>
-        <p class="hint">조작: 탭/클릭 · Space/↑ 점프</p>
-      </div>
+    <div class="stat-row">
+      <div class="stat-label">매력</div>
+      <div class="dual"><span class="mid"></span><span class="neg" id="neg-charm"></span><span class="pos" id="pos-charm"></span></div>
+      <div class="stat-val" id="val-charm">0</div>
     </div>
-  </section>
+    <div class="stat-row">
+      <div class="stat-label">재력</div>
+      <div class="dual"><span class="mid"></span><span class="neg" id="neg-wealth"></span><span class="pos" id="pos-wealth"></span></div>
+      <div class="stat-val" id="val-wealth">0</div>
+    </div>
+    <div class="stat-row">
+      <div class="stat-label">스트레스</div>
+      <div class="dual"><span class="mid"></span><span class="neg" id="neg-stress"></span><span class="pos" id="pos-stress"></span></div>
+      <div class="stat-val" id="val-stress">0</div>
+    </div>
+
+    <div class="log-wrap">
+      <div class="log-title">Log</div>
+      <div class="log" id="log"></div>
+    </div>
+  </aside>
+</main>
+
+<!-- Ending Modal -->
+<div class="modal" id="endingModal" role="dialog" aria-modal="true">
+  <div class="modal-card">
+    <h3 id="endingTitle">엔딩</h3>
+    <img id="endingImg" alt="ending image" />
+    <p id="endingDesc">설명</p>
+    <div class="modal-actions">
+      <button class="btn" id="closeEnding">닫기</button>
+      <button class="btn btn-primary" id="restartAllFromEnding">처음부터</button>
+    </div>
+  </div>
 </div>
 
-<footer class="footer">
-  <span>made by 진징구</span> · <span>CC BY-NC 4.0</span>
-</footer>
-
-<!-- Lightbox -->
-<div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-label="Image viewer" style="display:none;align-items:center;justify-content:center;z-index:50;background:rgba(0,0,0,.68);position:fixed;inset:0">
-  <button class="btn btn--small" style="position:absolute;top:16px;right:16px;background:#fff;color:#1c2b1c" onclick="closeLightbox()">Close ✕</button>
-  <img id="lightboxImg" alt="" style="max-width:90vw;max-height:80vh;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.4)">
+<!-- Event Modal -->
+<div class="modal" id="eventModal" role="dialog" aria-modal="true">
+  <div class="modal-card">
+    <h3 id="eventTitle">이벤트</h3>
+    <p id="eventText"></p>
+    <div class="modal-actions">
+      <button class="btn" id="eventA">선택 A</button>
+      <button class="btn btn-primary" id="eventB">선택 B</button>
+    </div>
+  </div>
 </div>
 
 <script>
-/* ===== Helpers ===== */
-const $ = s => document.querySelector(s);
-const $$ = s => document.querySelectorAll(s);
-function loadJson(key, fallback){ try{ return JSON.parse(localStorage.getItem(key)||'') ?? fallback; }catch{ return fallback; } }
-function saveJson(key, val){ localStorage.setItem(key, JSON.stringify(val)); }
+/* =========================
+   이미지 매핑 (제공 링크)
+========================= */
+const SLIME_IMG = {
+    기본: "https://github.com/jinjing9/-/blob/main/basic.png?raw=true",
+  청혜령: "https://github.com/jinjing9/-/blob/main/cheonghyeryeong.png?raw=true",
+  에티켓: "https://github.com/jinjing9/-/blob/main/etiquette.png?raw=true",
+  홍민택: "https://github.com/jinjing9/-/blob/main/hongmintaek.png?raw=true",
+  아이스본: "https://github.com/jinjing9/-/blob/main/iceborn.png?raw=true",
+  진징구: "https://github.com/jinjing9/-/blob/main/jinjingoo.png?raw=true",
+};
 
-/* ===== 💚 hearts (game 영역 제외) ===== */
-(function(){
-  let tokens = 12;
-  setInterval(()=>{ tokens = Math.min(12, tokens+3); }, 250);
-  function spawn(x,y){
-    if(tokens<=0) return; tokens--;
-    const el = document.createElement('div'); el.className='heart'; el.textContent='💚';
-    document.body.appendChild(el);
-    const rot=(Math.random()*40-20), scaleTo=1.6+Math.random()*0.6;
-    const dx=(Math.random()*60-30), dy=-(50+Math.random()*60);
-    const start=performance.now(), dur=500+Math.random()*400;
-    function frame(now){
-      const t=Math.min(1,(now-start)/dur);
-      const ease=t<.5?2*t*t:-1+(4-2*t)*t;
-      const cx=x+dx*ease, cy=y+dy*ease;
-      el.style.left=cx+'px'; el.style.top=cy+'px';
-      el.style.transform=`translate(-50%,-50%) rotate(${rot*ease}deg) scale(${1+(scaleTo-1)*ease})`;
-      el.style.opacity=1-t;
-      if(t<1) requestAnimationFrame(frame); else el.remove();
-    }
-    requestAnimationFrame(frame);
+/* --- (신규) 프리로드: 엔딩 이미지 미리 로드해서 모달 때 빠르게 표시 --- */
+const PRELOADED = {};
+for (const [k, src] of Object.entries(SLIME_IMG)) {
+  const im = new Image();
+  im.src = src;
+  PRELOADED[k] = im;
+}
+
+/* =========================
+   요소
+========================= */
+const HUD_DAY = document.getElementById('hudDay');
+const HUD_ACT = document.getElementById('hudAct');
+
+const neg = {
+  체력: document.getElementById('neg-hp'),
+  지능: document.getElementById('neg-iq'),
+  매력: document.getElementById('neg-charm'),
+  재력: document.getElementById('neg-wealth'),
+  스트레스: document.getElementById('neg-stress')
+};
+const pos = {
+  체력: document.getElementById('pos-hp'),
+  지능: document.getElementById('pos-iq'),
+  매력: document.getElementById('pos-charm'),
+  재력: document.getElementById('pos-wealth'),
+  스트레스: document.getElementById('pos-stress')
+};
+const vals = {
+  체력: document.getElementById('val-hp'),
+  지능: document.getElementById('val-iq'),
+  매력: document.getElementById('val-charm'),
+  재력: document.getElementById('val-wealth'),
+  스트레스: document.getElementById('val-stress')
+};
+
+const img = document.getElementById('slimeImg');
+const toast = document.getElementById('toast');
+const logEl = document.getElementById('log');
+
+const nextBtn = document.getElementById('nextBtn');
+const resetDayBtn = document.getElementById('resetDayBtn');
+const resetAllBtn = document.getElementById('resetAllBtn');
+
+const endingModal = document.getElementById('endingModal');
+const endingTitle = document.getElementById('endingTitle');
+const endingDesc  = document.getElementById('endingDesc');
+const endingImg   = document.getElementById('endingImg');
+const closeEnding = document.getElementById('closeEnding');
+const restartAllFromEnding = document.getElementById('restartAllFromEnding');
+
+const eventModal = document.getElementById('eventModal');
+const eventTitle = document.getElementById('eventTitle');
+const eventText  = document.getElementById('eventText');
+const eventA     = document.getElementById('eventA');
+const eventB     = document.getElementById('eventB');
+
+/* =========================
+   상태
+========================= */
+let stats, day, actionsTaken, chosenActs;
+let dayStartSnapshot = null; // 하루 리셋용
+
+/* =========================
+   규칙 (−100~100 스케일)
+========================= */
+// 행동 기본 변화량 (중립 0 기준, 델타값)
+const ACTION_EFF = {
+  운동:   { 체력:+8,  지능:-3, 매력: 0,  재력: 0,  스트레스:-2,  anim:'anim-jump' },
+  유니티: { 체력:-4, 지능:-5, 매력:+10, 재력:-8, 스트레스:+8,   anim:'anim-flash' },
+  일:     { 체력:-5, 지능: 0,  매력:-3,  재력:+12, 스트레스:+8,   anim:'anim-shake' },
+  독서:   { 체력:-2, 지능:+10, 매력: 0,  재력: 0,  스트레스:-2,  anim:'anim-tilt' },
+  VRC:    { 체력:+6,  지능: 0,  매력:-1,  재력: 0,  스트레스:-12, anim:'anim-breathe' }
+};
+// 행동 내러티브
+const ACTION_TEXT = {
+  운동:'땀 흘리며 운동했다!',
+  유니티:'유니티로 아바타를 만지작… 예뻐졌다',
+  일:'죽어라 일해서 돈을 벌었다',
+  독서:'책을 읽으며 지식이 늘었다',
+  VRC:'VRC에서 힐링했다'
+};
+
+// 반복 페널티: 같은 날 2번째 ×0.6, 3번째 ×0.3
+function repeatFactor(n){ return n===1?1 : n===2?0.6 : 0.3; }
+
+// 소프트 캡: 0에서 멀어지는 방향이면 감쇠 (|val| 커질수록 ↓)
+function soften(val, delta){
+  const away = (val>0 && delta>0) || (val<0 && delta<0);
+  if(!away) return delta; // 0 쪽으로 가는 변화는 그대로
+  const a = Math.abs(val);
+  let f = 1;
+  if(a>=90) f = 0.25;
+  else if(a>=80) f = 0.45;
+  else if(a>=60) f = 0.7;
+  return Math.round(delta * f);
+}
+
+// 자연 복귀: 하루 끝나고 0을 향해 1pt (가끔 2pt)
+function driftTowardZero(v){
+  if(v===0) return 0;
+  const step = Math.random()<0.15?2:1;
+  return v>0 ? v-step : v+step;
+}
+
+const clamp = v => Math.max(-100, Math.min(100, v));
+// 작은 지터 (±10%)
+const jitter = v => Math.round(v * (1 + (Math.random()*0.2 - 0.1)));
+
+/* =========================
+   렌더 (듀얼바)
+========================= */
+function renderBars(){
+  for(const k of Object.keys(vals)){
+    const v = stats[k];
+    const posW = Math.max(0, v)/2;   // +100 -> 50%
+    const negW = Math.max(0,-v)/2;   // -100 -> 50%
+    pos[k].style.width = posW + '%';
+    neg[k].style.width = negW + '%';
+    vals[k].textContent = (v>0?'+':'') + v;
   }
-  document.addEventListener('pointerdown', e=>{
-    const tag=(e.target.tagName||'').toLowerCase();
-    if(['input','textarea','select','button','a','label','canvas'].includes(tag)) return;
-    if(e.target.closest('[data-noparticle]')) return; // 게임 영역 차단
-    spawn(e.clientX, e.clientY);
+  HUD_DAY.textContent = day;
+  HUD_ACT.textContent = actionsTaken;
+}
+function setSlimeImage(key='기본'){ img.src = SLIME_IMG[key] || SLIME_IMG.기본; }
+
+/* =========================
+   초기화 & 하루 스냅샷
+========================= */
+function markDayStart(){
+  dayStartSnapshot = { stats: {...stats}, imageSrc: img.src };
+}
+function resetAll(){ // 완전 초기화
+  stats = { 체력:0, 지능:0, 매력:0, 재력:0, 스트레스:0 };
+  day = 1; actionsTaken = 0; chosenActs = [];
+  setSlimeImage('기본');
+  logEl.innerHTML = '';
+  markDayStart();
+  enableActions(true);
+  renderBars();
+}
+function resetDay(){ // 하루 리셋
+  if(!dayStartSnapshot) return;
+  stats = {...dayStartSnapshot.stats};
+  img.src = dayStartSnapshot.imageSrc || SLIME_IMG.기본;
+  actionsTaken = 0; chosenActs = [];
+  logEl.innerHTML = '';
+  enableActions(true);
+  renderBars();
+}
+
+/* =========================
+   행동
+========================= */
+function showToast(text){
+  toast.textContent = text;
+  toast.style.display = 'block';
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(()=> toast.style.display='none', 1100);
+}
+function animateSlime(cls){
+  img.classList.remove('anim-jump','anim-flash','anim-shake','anim-tilt','anim-breathe');
+  void img.offsetWidth; img.classList.add(cls);
+}
+function enableActions(on){ document.querySelectorAll('[data-act]').forEach(b=> b.disabled = !on); }
+
+document.querySelectorAll('[data-act]').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    if(actionsTaken>=3) return;
+    const act = btn.dataset.act;
+    chosenActs.push(act);
+    actionsTaken++;
+
+    // 로그 (내러티브)
+    const p = document.createElement('p');
+    p.textContent = ACTION_TEXT[act] || act;
+    logEl.appendChild(p); logEl.scrollTop = logEl.scrollHeight;
+
+    animateSlime(ACTION_EFF[act].anim);
+    showToast(ACTION_TEXT[act]);
+
+    if(actionsTaken>=3) enableActions(false);
+    renderBars();
   });
-})();
-
-/* ===== Lightbox ===== */
-const lightbox = $('#lightbox'), lightboxImg = $('#lightboxImg');
-function openLightbox(src, alt){ lightboxImg.src=src; lightboxImg.alt=alt||''; lightbox.style.display='flex'; }
-function closeLightbox(){ lightbox.style.display='none'; lightboxImg.src=''; }
-lightbox.addEventListener('click', e=>{ if(e.target===lightbox) closeLightbox(); });
-window.addEventListener('keydown', e=>{ if(e.key==='Escape' && lightbox.style.display==='flex') closeLightbox(); });
-
-/* ===== Gallery (persist, max 6, delete) ===== */
-const GAL_KEY='vrc_jing_gallery_v1';
-const fileInput=$('#fileInput'), galleryGrid=$('#galleryGrid');
-let gallery=loadJson(GAL_KEY,[]);
-renderGallery();
-fileInput?.addEventListener('change', async e=>{
-  const files=Array.from(e.target.files||[]);
-  for(const f of files){
-    if(!f.type.startsWith('image/')) continue;
-    const dataUrl=await fileToResizedDataURL(f,1280);
-    gallery.unshift({dataUrl,cap:''}); while(gallery.length>6) gallery.pop();
-  }
-  saveJson(GAL_KEY,gallery); renderGallery(); fileInput.value='';
 });
-function renderGallery(){
-  galleryGrid.innerHTML='';
-  gallery.forEach((it,idx)=>{
-    const item=document.createElement('div'); item.className='thumb';
-    const img=document.createElement('img'); img.src=it.dataUrl; img.alt='gallery-'+idx;
-    img.addEventListener('click',()=>openLightbox(it.dataUrl,it.cap||''));
-    const cap=document.createElement('div'); cap.className='cap';
-    const input=document.createElement('input');
-    Object.assign(input.style,{width:'100%',border:'none',background:'transparent',color:'#fff',outline:'none'});
-    input.placeholder='캡션(예: 카페 월드에서 📸)'; input.maxLength=60; input.value=it.cap||'';
-    input.addEventListener('input',()=>{ gallery[idx].cap=input.value; saveJson(GAL_KEY,gallery); });
-    const del=document.createElement('button'); del.className='btn btn--small del'; del.textContent='Delete';
-    del.addEventListener('click',ev=>{ ev.stopPropagation(); gallery.splice(idx,1); saveJson(GAL_KEY,gallery); renderGallery(); });
-    cap.appendChild(input); item.appendChild(img); item.appendChild(cap); item.appendChild(del);
-    galleryGrid.appendChild(item);
-  });
+
+/* =========================
+   하루 종료: 합산 적용 (반복 페널티 개선)
+========================= */
+function applyDayChanges(){
+  const add = { 체력:0, 지능:0, 매력:0, 재력:0, 스트레스:0 };
+  const usedCount = {}; // 행동별 누적 카운트
+
+  for(const act of chosenActs){
+    usedCount[act] = (usedCount[act]||0) + 1; // 이번 적용이 몇 번째인지
+    const eff = ACTION_EFF[act];
+    const r = repeatFactor(usedCount[act]);
+
+    for(const k of Object.keys(add)){
+      if(eff[k]===undefined) continue;
+      const base = eff[k];
+      const delta = jitter(Math.round(base * r));
+      add[k] += soften(stats[k], delta);
+    }
+  }
+
+  // 적용
+  for(const k of Object.keys(stats)){
+    stats[k] = clamp(stats[k] + add[k]);
+  }
+  // 자연 복귀(0쪽으로 1pt, 가끔 2pt)
+  for(const k of Object.keys(stats)){
+    stats[k] = clamp(driftTowardZero(stats[k]));
+  }
+
+  // 다음날 준비(하루 로그는 비움)
+  chosenActs = []; actionsTaken = 0; enableActions(true);
+  renderBars();
+  logEl.innerHTML = '';
 }
-function fileToResizedDataURL(file,maxSize=1280){
-  return new Promise(resolve=>{
-    const reader=new FileReader();
-    reader.onload=()=>{
-      const img=new Image();
-      img.onload=()=>{
-        const scale=Math.min(1,maxSize/Math.max(img.width,img.height));
-        const cw=Math.round(img.width*scale), ch=Math.round(img.height*scale);
-        const canvas=document.createElement('canvas'); canvas.width=cw; canvas.height=ch;
-        canvas.getContext('2d').drawImage(img,0,0,cw,ch);
-        resolve(canvas.toDataURL('image/jpeg',0.9));
-      };
-      img.src=reader.result;
-    };
-    reader.readAsDataURL(file);
-  });
+
+/* =========================
+   이벤트: 스탯별 조건 + 팝업 선택
+========================= */
+// 이벤트 정의(스탯당 1개, 조건 충족 시 후보)
+const EVENTS = [
+  {
+    key:'hpLow',
+    cond:(s)=> s.체력 <= -60,
+    title:'기절 직전',
+    text:'몸이 휘청거린다. 병원에 갈까?',
+    a:{ label:'병원 간다', eff:{체력:+20, 재력:-15, 스트레스:-5} },
+    b:{ label:'그냥 쉰다', eff:{체력:+8,  스트레스:+5} }
+  },
+  {
+    key:'iqHigh',
+    cond:(s)=> s.지능 >= +60,
+    title:'머리 과열',
+    text:'너무 많은 걸 알아버렸다.',
+    a:{ label:'심호흡',     eff:{지능:-8,  스트레스:-6} },
+    b:{ label:'더 파고든다', eff:{지능:+4,  스트레스:+10} }
+  },
+  {
+    key:'charmHigh',
+    cond:(s)=> s.매력 >= +70,
+    title:'즉석 요청',
+    text:'사람들이 사진을 요청한다.',
+    a:{ label:'사진 찍어준다', eff:{매력:+5, 체력:-4, 스트레스:+5} },
+    b:{ label:'정중히 거절',   eff:{매력:-6, 스트레스:-4} }
+  },
+  {
+    key:'wealthHigh',
+    cond:(s)=> s.재력 >= +70,
+    title:'한턱 쏘기',
+    text:'오늘은 한턱 쏠까?',
+    a:{ label:'한턱 쏜다', eff:{재력:-15, 매력:+10, 스트레스:+5} },
+    b:{ label:'모른 척한다', eff:{스트레스:-5} }
+  },
+  {
+    key:'stressHigh',
+    cond:(s)=> s.스트레스 >= +70,
+    title:'폭발 직전',
+    text:'감정이 폭발하기 직전이다.',
+    a:{ label:'운동으로 풀기', eff:{스트레스:-15, 체력:-5} },
+    b:{ label:'꾹 참는다',     eff:{스트레스:-5,  지능:-3} }
+  }
+];
+
+function maybePickEvent(){
+  const eligible = EVENTS.filter(e=> e.cond(stats));
+  if(!eligible.length) return null;
+  // 조건 만족해도 매일 뜨지 않도록 확률 게이트
+  if(Math.random() < 0.35){
+    return eligible[Math.floor(Math.random()*eligible.length)];
+  }
+  return null;
 }
 
-/* ===== Guestbook (persist) ===== */
-const GB_KEY='vrc_jing_guestbook_v1';
-const GB_MY='vrc_jing_me_ids_v1';
-const GB_LIK='vrc_jing_liked_ids_v1';
-let gb=loadJson(GB_KEY,[]), meIds=new Set(loadJson(GB_MY,[])), liked=new Set(loadJson(GB_LIK,[]));
-let sortMode='latest';
-$('#sortLatest').addEventListener('click',()=>setSort('latest'));
-$('#sortLikes').addEventListener('click',()=>setSort('likes'));
-function setSort(mode){
-  sortMode=mode;
-  $('#sortLatest').setAttribute('aria-pressed',mode==='latest');
-  $('#sortLikes').setAttribute('aria-pressed',mode==='likes');
-  renderGB();
+function applyEffects(eff){
+  for(const [k,delta] of Object.entries(eff)){
+    stats[k] = clamp(stats[k] + delta);
+  }
+  renderBars();
 }
-function genId(){ return 'gb_'+Math.random().toString(36).slice(2,9)+Date.now().toString(36); }
-function renderGB(){
-  const items=[...gb];
-  if(sortMode==='latest') items.sort((a,b)=>b.ts-a.ts);
-  else items.sort((a,b)=>(b.likes||0)-(a.likes||0));
-  const list=$('#gbList'); list.innerHTML='';
-  for(const it of items){
-    const row=document.createElement('div'); row.className='gb-item'; row.dataset.id=it.id;
-    const left=document.createElement('div');
-    const name=document.createElement('div'); name.className='gb-name'; name.textContent=it.name;
-    const msg=document.createElement('div'); msg.className='gb-msg';  msg.textContent=it.msg;
-    const meta=document.createElement('div'); meta.className='gb-meta'; meta.textContent=new Date(it.ts).toLocaleString()+` · Likes ${it.likes||0}`;
-    left.appendChild(name); left.appendChild(msg); left.appendChild(meta);
-    const ops=document.createElement('div');
-    const likeBtn=document.createElement('button'); likeBtn.className='btn btn--small';
-    likeBtn.textContent=liked.has(it.id)?'💚 Undo':'💚 Like';
-    likeBtn.addEventListener('click',e=>{ e.stopPropagation(); toggleLike(it.id); });
-    ops.appendChild(likeBtn);
-    if(meIds.has(it.id)){
-      const editBtn=document.createElement('button'); editBtn.className='btn btn--small'; editBtn.textContent='Edit';
-      editBtn.addEventListener('click',e=>{ e.stopPropagation(); editItem(it.id); });
-      const delBtn=document.createElement('button'); delBtn.className='btn btn--small'; delBtn.textContent='Delete';
-      delBtn.addEventListener('click',e=>{ e.stopPropagation(); deleteItem(it.id); });
-      ops.appendChild(editBtn); ops.appendChild(delBtn);
+function openEvent(ev, done){
+  eventTitle.textContent = ev.title;
+  eventText.textContent  = ev.text;
+  eventA.textContent = ev.a.label;
+  eventB.textContent = ev.b.label;
+
+  eventA.onclick = ()=>{ applyEffects(ev.a.eff); eventModal.classList.remove('active'); done(); };
+  eventB.onclick = ()=>{ applyEffects(ev.b.eff); eventModal.classList.remove('active'); done(); };
+
+  eventModal.classList.add('active');
+}
+
+/* =========================
+   엔딩 힌트 (Day 26 진입)
+========================= */
+const HINT_TEXT = {
+  '아이스본': '나쁘지 않은데요?',
+  '청혜령':   '저도 보는 눈이 있어요...',
+  '에티캣':   '놀자.',
+  '홍민택':   '으흐흐...',
+  '진징구':   '크아아아악',
+  '평범':     '아직 특별한 기운이 느껴지지 않아요.'
+};
+function guessEnding(s){
+  // 간단 스코어: 조건 충족 +2, 근접(10p) +1
+  const scores = {'아이스본':0,'청혜령':0,'에티캣':0,'홍민택':0,'진징구':0};
+  const near=(need,cur)=> Math.abs(need-cur)<=10;
+
+  // 아이스본: 지능≥+30, 매력≥+20, 재력≥+25, 체력≥+15, 스트레스≤−20
+  if(s.지능>=30) scores['아이스본']+=2; else if(near(30,s.지능)) scores['아이스본']++;
+  if(s.매력>=20) scores['아이스본']+=2; else if(near(20,s.매력)) scores['아이스본']++;
+  if(s.재력>=25) scores['아이스본']+=2; else if(near(25,s.재력)) scores['아이스본']++;
+  if(s.체력>=15) scores['아이스본']+=2; else if(near(15,s.체력)) scores['아이스본']++;
+  if(s.스트레스<=-20) scores['아이스본']+=2; else if(near(-20,s.스트레스)) scores['아이스본']++;
+
+  // 청혜령: 체력≥+35, 재력≥+20, 지능≥+10, 스트레스≤0
+  if(s.체력>=35) scores['청혜령']+=2; else if(near(35,s.체력)) scores['청혜령']++;
+  if(s.재력>=20) scores['청혜령']+=2; else if(near(20,s.재력)) scores['청혜령']++;
+  if(s.지능>=10) scores['청혜령']+=2; else if(near(10,s.지능)) scores['청혜령']++;
+  if(s.스트레스<=0) scores['청혜령']+=2; else if(near(0,s.스트레스)) scores['청혜령']++;
+
+  // 에티캣: 체력≥+10, 지능≥+10, 재력≤0, 스트레스≤+5
+  if(s.체력>=10) scores['에티캣']+=2; else if(near(10,s.체력)) scores['에티캣']++;
+  if(s.지능>=10) scores['에티캣']+=2; else if(near(10,s.지능)) scores['에티캣']++;
+  if(s.재력<=0) scores['에티캣']+=2; else if(near(0,s.재력)) scores['에티캣']++;
+  if(s.스트레스<=5) scores['에티캣']+=2; else if(near(5,s.스트레스)) scores['에티캣']++;
+
+  // 홍민택: 재력≥+20, 지능≥+20, 스트레스≥+15
+  if(s.재력>=20) scores['홍민택']+=2; else if(near(20,s.재력)) scores['홍민택']++;
+  if(s.지능>=20) scores['홍민택']+=2; else if(near(20,s.지능)) scores['홍민택']++;
+  if(s.스트레스>=15) scores['홍민택']+=2; else if(near(15,s.스트레스)) scores['홍민택']++;
+
+  // 진징구: 재력≥+15, 매력≥+10, 지능≤−10, 체력≤−20
+  if(s.재력>=15) scores['진징구']+=2; else if(near(15,s.재력)) scores['진징구']++;
+  if(s.매력>=10) scores['진징구']+=2; else if(near(10,s.매력)) scores['진징구']++;
+  if(s.지능<=-10) scores['진징구']+=2; else if(near(-10,s.지능)) scores['진징구']++;
+  if(s.체력<=-20) scores['진징구']+=2; else if(near(-20,s.체력)) scores['진징구']++;
+
+  let best='평범', bestScore=-1;
+  for(const [k,v] of Object.entries(scores)){ if(v>bestScore){ best=k; bestScore=v; } }
+  return best;
+}
+
+/* =========================
+   엔딩 판정
+========================= */
+const EXTREME_TEXT = {
+  hi:{체력:'단단해져 굳어버렸다...!', 지능:'너무 많은걸 알아버렸어.', 매력:'나는 이제 누굴 사랑해야하지?', 재력:'돈이 전부는 아닐거에요', 스트레스:'이럴 바엔 죽고말겠어'},
+  lo:{체력:'숨 쉬는 것도 힘든데ㅇ..ㅛ..?', 지능:'숨 쉬는 법을 잊어버렸ㅇ...', 매력:'아무도 저를 기억해주지 않아요.', 재력:'밥이 먹고싶어요...', 스트레스:'이렇게 행복해도 되는걸까?'}
+};
+function pickExtremeEnding(s){
+  const arr = [['체력',s.체력],['지능',s.지능],['매력',s.매력],['재력',s.재력],['스트레스',s.스트레스]]
+              .filter(([k,v])=> v>=95 || v<=-95);
+  if(!arr.length) return null;
+  arr.sort((a,b)=> Math.abs(b[1]) - Math.abs(a[1]));
+  const [key,val] = arr[0];
+  return { title:`${key} 극단 엔딩`, desc: val>=95 ? EXTREME_TEXT.hi[key] : EXTREME_TEXT.lo[key], name:null };
+}
+
+const ENDING_TEXT = {
+  '아이스본': { title:'아이스본 엔딩', desc:'좋은데요?' },
+  '청혜령':   { title:'청혜령 엔딩',   desc:'한 잔은 떠나버린 너를 위하여 또 한 잔은 너와의 영원한 사랑을 위하여 그리고 또 한 잔은 이미 초라해진 나를 위하여...' },
+  '에티캣':   { title:'에티캣 엔딩',   desc:'빵!' },
+  '홍민택':   { title:'홍민택 엔딩',   desc:'으흐흐... 똥' },
+  '진징구':   { title:'진징구 엔딩',   desc:'(담배 피러 감)' },
+  '평범':     { title:'평범 엔딩',     desc:'평범한 슬라임. 다음엔 다른 선택을 해보자!' }
+};
+function pickNormalEnding(s){
+  const list = [];
+  if(s.지능>=30 && s.매력>=20 && s.재력>=25 && s.체력>=15 && s.스트레스<=-20) list.push('아이스본');
+  if(s.체력>=35 && s.재력>=20 && s.지능>=10 && s.스트레스<=0) list.push('청혜령');
+  if(s.체력>=10 && s.지능>=10 && s.재력<=0 && s.스트레스<=5) list.push('에티캣');
+  if(s.재력>=20 && s.지능>=20 && s.스트레스>=15) list.push('홍민택');
+  if(s.재력>=15 && s.매력>=10 && s.지능<=-10 && s.체력<=-20) list.push('진징구');
+  if(!list.length) return {name:'평범', ...ENDING_TEXT['평범']};
+  const name = list.length===1 ? list[0] : list[Math.floor(Math.random()*list.length)];
+  return {name, ...ENDING_TEXT[name]};
+}
+
+/* =========================
+   진행 (이벤트 → 다음날 → 힌트/엔딩)
+========================= */
+function advanceDay(){
+  day++;
+  renderBars();
+
+  // Day 26 진입(5일 남음) → 힌트
+  if(day===26){
+    const hintKey = guessEnding(stats) || '평범';
+    const p = document.createElement('p');
+    p.textContent = `힌트: ${HINT_TEXT[hintKey]}`;
+    logEl.appendChild(p);
+  }
+
+  // 새 하루 스냅샷
+  markDayStart();
+
+  // (수정) 엔딩 처리: 이미지 로딩 후 모달 오픈
+  if (day > 30) {
+    let title = '엔딩', desc = '', imgKey = '기본';
+
+    const ex = pickExtremeEnding(stats);
+    if (ex) {
+      title = ex.title; desc = ex.desc; imgKey = '기본'; // 극단치는 기본이미지
+    } else {
+      const res = pickNormalEnding(stats); // {name, title, desc}
+      title = res.title; desc = res.desc;
+      imgKey = (res.name && SLIME_IMG[res.name]) ? res.name : '기본';
     }
-    if(it.contact && it.contact.trim()){
-      const priv=document.createElement('div'); priv.className='hint'; priv.textContent='X ID saved privately 🔒';
-      left.appendChild(priv);
-    }
-    row.appendChild(left); row.appendChild(ops);
-    list.appendChild(row);
+
+    endingTitle.textContent = title;
+    endingDesc.textContent  = desc;
+    endingImg.style.display = 'block';
+    endingImg.alt = (imgKey === '기본' ? '기본' : imgKey) + ' 엔딩';
+
+    // 이전 src 잔상 방지 + 로딩 이벤트로 모달 열기
+    endingImg.removeAttribute('src');
+    endingImg.onload  = () => { endingModal.classList.add('active'); };
+    endingImg.onerror = () => { endingModal.classList.add('active'); };
+    endingImg.src = SLIME_IMG[imgKey];
+
+    return;
   }
 }
-function addGB(name,msg,contact){
-  const entry={id:genId(), name, msg, contact, ts:Date.now(), likes:0};
-  gb.push(entry); meIds.add(entry.id);
-  saveJson(GB_KEY,gb); saveJson(GB_MY,[...meIds]); renderGB();
+
+function tryNextDay(){
+  if(actionsTaken<3){ alert('하루에 3번 행동해야 합니다!'); return; }
+  applyDayChanges();
+
+  const ev = maybePickEvent();
+  if(ev){
+    openEvent(ev, advanceDay);
+  }else{
+    advanceDay();
+  }
 }
-function editItem(id){
-  const i=gb.findIndex(x=>x.id===id); if(i<0) return;
-  const cur=gb[i]; const next=prompt('메시지를 수정하세요:', cur.msg);
-  if(next==null) return; const v=next.trim();
-  if(v.length<2){ alert('2자 이상 입력해주세요.'); return; }
-  gb[i].msg=v; gb[i].ts=Date.now(); saveJson(GB_KEY,gb); renderGB();
-}
-function deleteItem(id){
-  if(!confirm('정말 삭제할까요?')) return;
-  gb=gb.filter(x=>x.id!==id); meIds.delete(id); liked.delete(id);
-  saveJson(GB_KEY,gb); saveJson(GB_MY,[...meIds]); saveJson(GB_LIK,[...liked]); renderGB();
-}
-function toggleLike(id){
-  const i=gb.findIndex(x=>x.id===id); if(i<0) return;
-  if(liked.has(id)){ gb[i].likes=Math.max(0,(gb[i].likes||0)-1); liked.delete(id); }
-  else{ gb[i].likes=(gb[i].likes||0)+1; liked.add(id); }
-  saveJson(GB_KEY,gb); saveJson(GB_LIK,[...liked]); renderGB();
-}
-$('#gbForm').addEventListener('submit', e=>{
-  e.preventDefault();
-  const name=$('#gbName').value.trim();
-  const msg=$('#gbMsg').value.trim();
-  const contact=$('#gbContact').value.trim();
-  if(name.length<1 || msg.length<2){ alert('닉네임과 2자 이상의 메시지를 입력해주세요.'); return; }
-  addGB(name,msg,contact); e.target.reset();
-});
-renderGB();
 
-/* ===== Mini Game: 💚 runner vs 💀 (점수 난이도 + 1:1 이모지 + 가로겹침방지) ===== */
-(function(){
-  const CAN = $('#gameCanvas');
-  const CTX = CAN.getContext('2d');
-  const AREA = $('#gameArea');
-  const OVL = $('#gameOverlay');
-  const OVLSCORE = $('#gameOverScore');
-  const BTN_START = $('#btnStart');
-  const BTN_PAUSE = $('#btnPause');
-  const BTN_RESUME = $('#btnResume');
-  const BTN_RESTART = $('#btnRestart');
-  const CUR = $('#gCur');
-  const TOAST = $('#levelToast');
-  const NAME_IN = $('#rankName');
-  const BTN_SAVE = $('#btnSaveScore');
-  const RANK = $('#gRank');
-  const BTN_CLEAR = $('#btnClearRank');
+/* 모달 버튼 */
+closeEnding.addEventListener('click', ()=> endingModal.classList.remove('active'));
+restartAllFromEnding.addEventListener('click', ()=>{ endingModal.classList.remove('active'); resetAll(); });
 
-  const K_TOP5 = 'vrc_jing_game_top5';
+/* 컨트롤 */
+nextBtn.addEventListener('click', tryNextDay);
+resetAllBtn.addEventListener('click', resetAll);  // 처음부터 (완전 초기화)
+resetDayBtn.addEventListener('click', resetDay);  // 다시하기 (하루 리셋)
 
-  /* 고정 월드 좌표 */
-  const BASE_W=800, BASE_H=300;
-  let W=BASE_W, H=BASE_H, GROUND=BASE_H-36;
-
-  const TILE=36;
-  const GRAV=2200, JUMPV=780, COYOTE=0.10;
-
-  let started=false, running=false, paused=false, over=false;
-  let last=0, score=0, spawnTimer=0;
-  let player, obs=[];
-  let prevTier = 0;
-  let lastScore = 0;
-  let lastSpawnX = BASE_W;
-
-  /* === Emoji baseline fix === */
-  const EMOJI_FONT = '34px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji","Noto Sans KR",sans-serif';
-  CTX.font = EMOJI_FONT;
-  CTX.textBaseline = 'alphabetic';
-  const _m = CTX.measureText('💚');
-  const EM_ASC = _m.actualBoundingBoxAscent || 26;
-  const EM_DESC = _m.actualBoundingBoxDescent || 6;
-  function drawEmoji(ch, x, bottomY){
-    CTX.font = EMOJI_FONT;
-    CTX.textBaseline = 'alphabetic';
-    CTX.fillText(ch, x, bottomY - EM_DESC);
-  }
-
-  /* 캔버스 리사이즈 (DPR/반응형) */
-  function resizeCanvas(){
-    const dpr = window.devicePixelRatio || 1;
-    const cssW = CAN.clientWidth;
-    const cssH = CAN.clientHeight;
-    const scale = cssW / BASE_W;
-    CAN.width  = Math.round(cssW * dpr);
-    CAN.height = Math.round(cssH * dpr);
-    CTX.setTransform(scale * dpr, 0, 0, scale * dpr, 0, 0);
-    W=BASE_W; H=BASE_H; GROUND=BASE_H-36;
-  }
-  window.addEventListener('resize', resizeCanvas);
-
-  function reset(){
-    player={ x:80, y:GROUND-TILE, w:TILE-4, h:TILE-4, vy:0, onGround:true, sinceGround:0 };
-    obs=[]; spawnTimer=0; score=0; over=false; paused=false; prevTier=0; lastSpawnX=BASE_W;
-    CUR.textContent='0'; OVL.style.display='none';
-    BTN_RESUME.style.display='none'; BTN_PAUSE.style.display='';
-    BTN_SAVE.disabled = true;
-  }
-
-  /* 점수 기반 난이도 */
-  function getTier(){ return Math.floor(score/10); }
-  function rand(min,max){ return min + Math.random()*(max-min); }
-  function jitter(base,range){ const f=1 + (Math.random()*2*range - range); return base*f; }
-  function speedByScore(){ const t=getTier(); return Math.min(260*(1+0.08*t), 560); }
-  function spawnIntervalByScore(){ const t=getTier(); const shrink=Math.max(0.55,1-0.07*t); return jitter(1.50*shrink,0.30); }
-  function probDoubleByScore(){ const t=getTier(); return Math.min(0.08+0.03*t, 0.50); }
-
-  function start(){
-    if(started && !over) return;
-    started=true; running=true; last=performance.now();
-    resizeCanvas();
-    reset(); requestAnimationFrame(tick);
-  }
-  function pause(){ if(!running||over||paused) return; paused=true; running=false; BTN_RESUME.style.display=''; BTN_PAUSE.style.display='none'; }
-  function resume(){ if(!started||over||!paused) return; paused=false; running=true; BTN_RESUME.style.display='none'; BTN_PAUSE.style.display=''; last=performance.now(); requestAnimationFrame(tick); }
-  function restart(){ reset(); running=true; last=performance.now(); requestAnimationFrame(tick); }
-
-  function tick(now){
-    if(!running) return;
-    const dt = Math.min(0.05, (now-last)/1000);
-    last=now;
-    update(dt); draw();
-    requestAnimationFrame(tick);
-  }
-
-  function update(dt){
-    const tierNow=getTier();
-    if(tierNow>prevTier){
-      prevTier=tierNow;
-      TOAST.textContent=`Level Up! Lv.${tierNow}`;
-      TOAST.style.display='block';
-      setTimeout(()=>TOAST.style.display='none',900);
-    }
-
-    // 물리
-    player.vy += GRAV*dt; player.y += player.vy*dt;
-    if(player.y >= GROUND - player.h){ player.y = GROUND - player.h; player.vy = 0; player.onGround=true; player.sinceGround=0; }
-    else{ player.onGround=false; player.sinceGround+=dt; }
-
-    // 스폰
-    spawnTimer -= dt;
-    if(spawnTimer<=0){
-      spawnObstacle();
-      spawnTimer = spawnIntervalByScore();
-    }
-
-    // 이동/스코어
-    const v = speedByScore();
-    for(const o of obs){
-      o.x -= v*dt;
-      if(!o.counted && o.x + o.w < player.x){
-        o.counted = true;
-        score += 1;
-        CUR.textContent = String(score);
-      }
-    }
-    obs = obs.filter(o=>o.x + o.w > -60);
-
-    // 충돌 체크
-    for(const o of obs){
-      for(let k=0;k<o.units;k++){
-        const rx = o.x;
-        const ry = GROUND - (k+1)*(TILE-2);
-        const rw = TILE-6, rh = TILE-6;
-        if(overlap(player.x,player.y,player.w,player.h, rx,ry,rw,rh)){ gameOver(); return; }
-      }
-    }
-  }
-
-  function overlap(x1,y1,w1,h1,x2,y2,w2,h2){
-    return (x1 < x2+w2 && x1+w1 > x2 && y1 < y2+h2 && y1+h1 > y2);
-  }
-
-  /* 가로 겹침 방지 + 같은 x에서만 세로 스택 */
-  function spawnObstacle(){
-    const t=getTier();
-
-    pushOne(); // 기본 1개
-
-    const clusterChance = Math.min(0.20 + 0.06*t, 0.70);
-    const extraCount = Math.random() < clusterChance ? (Math.random() < 0.35 ? 2 : 1) : 0;
-
-    for(let i=0;i<extraCount;i++){
-      const maxGap = Math.max(120, 220 - 12*t);
-      const minGap = Math.max(70,  150 - 10*t);
-      const gap = rand(minGap, maxGap);
-      pushOne(gap);
-    }
-
-    function pushOne(offset=0){
-      const minSep = TILE + 10;
-      let newX = BASE_W + 30 + offset;
-      if (newX - lastSpawnX < minSep) newX = lastSpawnX + minSep;
-      const units = (Math.random() < probDoubleByScore()) ? 2 : 1; // 세로로만 쌓기
-      obs.push({ x:newX, w:TILE, units, counted:false });
-      lastSpawnX = newX;
-    }
-  }
-
-  function draw(){
-    CTX.clearRect(0,0,BASE_W,BASE_H);
-    // 배경/바닥
-    CTX.fillStyle='#f7fff7'; CTX.fillRect(0,0,BASE_W,BASE_H);
-    CTX.fillStyle='#dfe9dc'; CTX.fillRect(0,GROUND,BASE_W,BASE_H-GROUND);
-
-    // 플레이어 💚 — 발바닥이 바닥선에 정확히
-    drawEmoji('💚', player.x, player.y + player.h);
-
-    // 장애물 💀 — 각 유닛 bottomY 맞춰 접지
-    for(const o of obs){
-      for(let k=0;k<o.units;k++){
-        const topY   = GROUND - (k+1)*(TILE-2);
-        const bottom = topY + (TILE-2);
-        drawEmoji('💀', o.x, bottom);
-      }
-    }
-  }
-
-  function jump(){
-    if(over || !started) return;
-    if(player.onGround || player.sinceGround <= COYOTE){
-      player.vy = -JUMPV; player.onGround=false;
-    }
-  }
-
-  function gameOver(){
-    over=true; running=false;
-    lastScore = score;
-    OVL.style.display='flex';
-    document.getElementById('gameOverScore').textContent = 'Score ' + score;
-    BTN_SAVE.disabled = false;
-  }
-
-  /* TOP 5 저장 (닉네임-점수, 같은 닉네임 1개 유지) */
-  function loadTop5(){ return loadJson(K_TOP5, []); }
-  function saveTop5(arr){ saveJson(K_TOP5, arr); renderTop5(); }
-  function renderTop5(){
-    const arr = loadTop5().sort((a,b)=>b.score-a.score).slice(0,5);
-    RANK.innerHTML = '';
-    arr.forEach(item=>{
-      const li = document.createElement('li');
-      li.textContent = `${item.name} - ${item.score}`;
-      RANK.appendChild(li);
-    });
-  }
-  BTN_SAVE.addEventListener('click', ()=>{
-    const name = (NAME_IN.value||'').trim();
-    if(!over){ alert('게임이 끝난 뒤에 저장할 수 있어요!'); return; }
-    if(name.length<1){ alert('닉네임을 입력해주세요.'); return; }
-    let arr = loadTop5();
-    arr = arr.filter(it => it.name !== name);
-    arr.push({name, score:lastScore});
-    arr.sort((a,b)=>b.score-a.score);
-    arr = arr.slice(0,5);
-    saveTop5(arr);
-    BTN_SAVE.disabled = true;
-  });
-  BTN_CLEAR.addEventListener('click', ()=>{
-    if(confirm('TOP 5 기록을 모두 지울까요?')){ saveTop5([]); }
-  });
-
-  // controls & input
-  BTN_START.addEventListener('click', ()=>{ start(); });
-  BTN_RESTART.addEventListener('click', ()=>{ restart(); });
-  BTN_PAUSE.addEventListener('click', ()=>{ pause(); });
-  BTN_RESUME.addEventListener('click', ()=>{ resume(); });
-
-  AREA.addEventListener('pointerdown', e=>{
-    e.preventDefault();
-    if(!started){ start(); return; }
-    if(over||paused) return;
-    jump();
-  }, {passive:false});
-
-  window.addEventListener('keydown', e=>{
-    if(e.code==='Space' || e.code==='ArrowUp'){
-      if(!started){ start(); return; }
-      if(over||paused) return;
-      e.preventDefault(); jump();
-    }
-  });
-
-  window.addEventListener('blur', ()=>{ if(running) pause(); });
-
-  renderTop5();
-})();
+/* 시작 */
+resetAll();
 </script>
 </body>
 </html>
