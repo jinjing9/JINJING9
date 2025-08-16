@@ -1,708 +1,640 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Slime Maker</title>
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;800&display=swap" rel="stylesheet">
-
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>이세계 1년 보고서</title>
 <style>
-:root{
-  --ink:#2c2c2c;
-  --panel:#ffffff;
-  --line:#e6e6e6;
-  --accent:#a1bd9b;      /* 포인트 컬러 */
-  --muted:#b9bfc6;       /* 음수/보조 */
-  --shadow:0 10px 26px rgba(0,0,0,.08);
-  --radius:14px;
-}
+  /* === 팔레트: 다크 브라운 + 그린 포인트 === */
+  :root{
+    --base:#121517;      /* 배경(다크 브라운) */
+    --surf:#1A2024;      /* 패널(월넛 브라운) */
+    --ink:#ECE6DC;       /* 텍스트(웜 아이보리) */
+    --accent:#59B384;    /* 포인트(모스 그린) */
+    /* 고정 레이아웃 */
+    --content-w:1200px;  --left-w:420px;  --right-w:720px;  --gutter:24px;
+  }
+  *{box-sizing:border-box} html,body{height:100%}
+  body{margin:0;background:var(--base);color:var(--ink);
+       font-family:ui-rounded,ui-sans-serif,system-ui,Apple SD Gothic Neo,Malgun Gothic,sans-serif;
+       font-size:18px;line-height:1.6}
 
-/* 어두운 체크무늬 배경 (무채색) */
-html,body{height:100%}
-*{box-sizing:border-box}
-body{
-  margin:0;
-  background:
-    radial-gradient(900px 600px at -15% -20%, rgba(255,255,255,.03) 0%, transparent 60%),
-    radial-gradient(900px 600px at 115% 0%, rgba(255,255,255,.03) 0%, transparent 55%),
-    repeating-linear-gradient(45deg, #1d1d1d 0 12px, #222 12px 24px);
-  color:var(--ink);
-  font-family:'Noto Sans KR', system-ui, -apple-system, Segoe UI, sans-serif;
-}
+  .wrap{min-height:100vh;display:grid;grid-template-rows:auto 1fr}
+  .top{background:var(--surf);border-bottom:1px solid rgba(236,230,220,.08);
+       display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:12px}
+  .title{font-weight:900;letter-spacing:.2px}
 
-/* Header */
-.header{
-  position:sticky; top:0; z-index:5;
-  background:linear-gradient(180deg, rgba(0,0,0,.65), rgba(0,0,0,.5));
-  border-bottom:1px solid rgba(255,255,255,.06);
-  color:#fff;
-}
-.header-inner{
-  max-width:1100px; margin:0 auto; padding:14px 16px;
-  display:flex; align-items:flex-end; justify-content:space-between; gap:12px;
-}
-.h-title{margin:0; font-size:24px; font-weight:800; letter-spacing:.2px}
-.h-meta{display:flex; gap:10px; flex-wrap:wrap}
-.chip{
-  background:#2a2a2a; color:#fff; border:1px solid rgba(255,255,255,.08);
-  border-radius:999px; padding:8px 12px; box-shadow:0 6px 18px rgba(0,0,0,.35); font-weight:700;
-}
+  /* === 두 칼럼 고정 + 좌우 여백 === */
+  .main{display:grid;grid-template-columns:var(--left-w) var(--right-w);
+        gap:var(--gutter);width:var(--content-w);margin-inline:auto;padding:16px 0}
 
-/* Layout */
-.container{
-  max-width:1100px; margin:18px auto 60px; padding:0 16px;
-  display:grid; grid-template-columns:1.3fr 1fr; gap:18px;
-}
-@media (max-width:980px){.container{grid-template-columns:1fr}}
+  .panel{background:var(--surf);border:1px solid rgba(236,230,220,.06);border-radius:14px}
+  .hd{padding:12px 14px;border-bottom:1px dashed rgba(236,230,220,.10);font-weight:900}
+  .bd{padding:14px}
 
-.card{
-  background:var(--panel); border:1px solid var(--line);
-  border-radius:var(--radius); box-shadow:var(--shadow); padding:16px;
-}
-.card h2{margin:0 0 12px; font-size:18px; color:#1f1f1f}
+  /* 좌: 정보/스케줄 */
+  .chip{display:inline-block;border:1px dashed rgba(236,230,220,.12);border-radius:10px;padding:6px 10px;color:rgba(236,230,220,.75);background:#ffffff08}
+  .date{font-size:22px;font-weight:900}
+  .sched{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;border:1px dashed rgba(236,230,220,.12);
+         border-radius:12px;padding:10px;background:#ffffff08}
+  .cell{height:46px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+        border:1px dashed rgba(236,230,220,.12);border-radius:10px;background:#ffffff06;cursor:pointer;user-select:none}
+  .cell .d{font-size:12px;color:rgba(236,230,220,.6);line-height:1}
+  .cell .v{font-weight:900}
+  .cell.empty .v{color:rgba(236,230,220,.38)}
+  .cell.selected{outline:2px solid var(--accent);outline-offset:2px;background:#1E262A}
 
-/* Stage */
-.stage{display:grid; grid-template-rows:auto auto 1fr; gap:14px}
-.canvas{
-  display:flex; align-items:center; justify-content:center;
-  background:linear-gradient(180deg,#fff,#f8f8f8); border:1px solid var(--line);
-  border-radius:18px; min-height:320px; position:relative;
-}
-#slimeImg{width:min(420px, 84vw); height:auto; display:block; user-select:none}
-.toast{
-  position:absolute; left:50%; top:14px; transform:translateX(-50%);
-  background:rgba(0,0,0,.75); color:#fff; padding:8px 12px; border-radius:10px;
-  border:1px solid rgba(0,0,0,.25); display:none; max-width:calc(100% - 28px);
-  text-align:center; line-height:1.35;
-}
+  .actions-row{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-top:10px}
+  .btn{padding:12px 14px;border-radius:12px;border:2px solid var(--accent);
+       background:transparent;color:var(--accent);font-weight:900;cursor:pointer}
+  .btn:hover{background:rgba(89,179,132,.12)}
+  .btn.block{width:100%}
+  .btn.primary{background:var(--accent);color:var(--base);border-color:var(--accent)}
+  .btn.primary:hover{filter:brightness(.96)}
+  .btn:disabled{opacity:.45;cursor:not-allowed;filter:none} /* 꽉 찼을 때 비활성화 */
 
-/* Actions */
-.actions{display:grid; grid-template-columns:repeat(5,1fr); gap:10px}
-@media (max-width:860px){.actions{grid-template-columns:repeat(3,1fr)}}
-.btn{
-  appearance:none; border:none; cursor:pointer;
-  background:#fff; border:1px solid var(--line);
-  padding:12px 12px; border-radius:10px; font-weight:700; color:#2c2c2c;
-  transition:transform .05s ease, filter .15s ease; box-shadow:var(--shadow);
-}
-.btn:hover{filter:brightness(1.03)}
-.btn:active{transform:translateY(1px)}
-.btn[disabled]{opacity:.5; cursor:not-allowed}
-.btn-primary{background:var(--accent); color:#0f2b1f; border-color:#93b28e}
+  .log{border:1px dashed rgba(236,230,220,.12);border-radius:12px;padding:10px;background:#ffffff08;max-height:160px;overflow:auto}
+  .item{padding:6px 4px;border-bottom:1px dashed rgba(236,230,220,.10);color:rgba(236,230,220,.9)}
+  .item:last-child{border-bottom:none}
 
-/* Controls */
-.controls{display:flex; gap:10px; flex-wrap:wrap}
-.controls .btn{min-width:120px}
+  /* 우: 위 캐릭터 / 아래 스탯 */
+  .right{display:grid;grid-template-rows:auto 1fr;gap:16px}
+  .face{position:relative;display:flex;align-items:center;justify-content:center;min-height:420px}
 
-/* Status & Log */
-.stat-row{display:grid; grid-template-columns:92px 1fr 72px; align-items:center; gap:10px; margin-bottom:10px}
-.stat-label{font-size:13px; color:#5b5b5b}
+  /* --- 캐릭터: 화이트 라인, 채우기 없음 + 더 두껍게 --- */
+  #avatar{width:360px;height:auto;display:block}
+  #avatar *{stroke:#FFFFFF;fill:none;stroke-width:6}
+  #eyeL,#eyeR{fill:#FFFFFF;stroke:none}
 
-/* 듀얼바: 중앙 0, 좌(−)=무채색 / 우(+)=포인트 단색 */
-.dual{
-  height:14px; background:#ededed; border:1px solid #e3e3e3; border-radius:999px; position:relative; overflow:hidden
-}
-.dual .mid{position:absolute; left:50%; top:0; bottom:0; width:1px; background:#d8d8d8}
-.dual .neg{position:absolute; right:50%; top:0; bottom:0; width:0; background:var(--muted)}
-.dual .pos{position:absolute; left:50%; top:0; bottom:0; width:0; background:var(--accent)}
-.stat-val{text-align:right; font-size:13px; color:#4a4a4a}
+  /* 성격 배너(문장만, 20초) */
+  .p-banner{position:absolute;top:12px;left:50%;transform:translateX(-50%);
+    background:#1F262B;border:1px solid rgba(236,230,220,.12);border-radius:12px;padding:8px 14px;
+    color:var(--ink);font-weight:900;letter-spacing:.2px;opacity:0;transition:opacity .25s;box-shadow:0 8px 22px #0007}
+  .p-banner.show{opacity:1}
 
-.log-wrap{margin-top:12px}
-.log-title{margin:10px 0 8px; font-weight:700; color:#2b2b2b}
-.log{min-height:80px; max-height:220px; overflow:auto; border:1px dashed #e0e0e0; border-radius:12px; padding:10px; background:#fafafa}
-.log p{margin:0 0 8px; font-size:14px}
+  /* 진행/팝업 */
+  .ov{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:9998}
+  .card{width:min(720px,92vw);background:var(--surf);border:1px solid rgba(236,230,220,.10);border-radius:14px;box-shadow:0 10px 30px #0008;overflow:hidden}
+  .card-h{padding:14px 16px;border-bottom:1px dashed rgba(236,230,220,.10);font-weight:900}
+  .card-b{padding:16px}
+  .card-r{display:flex;gap:10px;justify-content:flex-end;padding:12px 16px}
 
-/* Image animations */
-@keyframes jump{0%{transform:translateY(0)}40%{transform:translateY(-14px)}100%{transform:translateY(0)}}
-@keyframes flash{0%,100%{opacity:1}50%{opacity:.25}}
-@keyframes shake{10%,90%{transform:translateX(-2px)}20%,80%{transform:translateX(3px)}30%,50%,70%{transform:translateX(-6px)}40%,60%{transform:translateX(6px)}}
-@keyframes tilt{0%{transform:rotate(0)}50%{transform:rotate(-4deg)}100%{transform:rotate(0)}}
-@keyframes breathe{0%{transform:translateY(0)}50%{transform:translateY(-6px)}100%{transform:translateY(0)}}
-.anim-jump{animation:jump .45s ease}
-.anim-flash{animation:flash .45s ease}
-.anim-shake{animation:shake .45s ease-in-out}
-.anim-tilt{animation:tilt .45s ease}
-.anim-breathe{animation:breathe .7s ease}
+  .run{position:fixed;inset:0;z-index:9997;background:rgba(20,20,20,.35);display:none;align-items:center;justify-content:center}
+  .run-box{background:#14191C;border:1px solid rgba(236,230,220,.10);border-radius:12px;padding:18px 22px;font-weight:900;color:var(--ink)}
 
-/* Modals (Ending / Event 공통) */
-.modal{position:fixed; inset:0; background:rgba(0,0,0,.45); display:none; align-items:center; justify-content:center; padding:20px; z-index:10}
-.modal.active{display:flex}
-.modal-card{width:min(620px,94vw); background:var(--panel); border:1px solid var(--line); border-radius:14px; box-shadow:var(--shadow); padding:20px}
-.modal-card h3{margin:0 0 8px; font-size:20px; color:#1f1f1f}
-.modal-card p{margin:8px 0 16px; color:#4a4a4a}
-.modal-actions{display:flex; gap:10px; justify-content:flex-end; margin-top:10px}
-#endingImg{display:block; max-width:280px; height:auto; margin:8px auto 0}
+  .toast{position:fixed;left:50%;top:16px;transform:translateX(-50%);background:#14191C;border:1px solid rgba(236,230,220,.12);
+         color:var(--ink);border-radius:10px;padding:10px 14px;font-weight:900;box-shadow:0 8px 18px #0008;opacity:0;transition:opacity .15s;z-index:10000}
+  .toast.show{opacity:1}
+
+  /* 스탯 바 */
+  .stat-row{display:grid;grid-template-columns:150px 1fr 64px;align-items:center;gap:8px}
+  .track{height:12px;background:#101417;border:1px solid rgba(236,230,220,.10);border-radius:8px;overflow:hidden}
+  .fill{height:100%;background:var(--accent)}
+
+  /* 결과 텍스트 */
+  .list{white-space:pre;font-family:ui-monospace,Consolas,monospace}
+  .dim{opacity:.75} .dim2{opacity:.55}
 </style>
 </head>
 <body>
+  <div class="wrap">
+    <div class="top"><div></div><div class="title">이세계 1년 보고서</div><div></div></div>
 
-<header class="header">
-  <div class="header-inner">
-    <h1 class="h-title">Slime Maker</h1>
-    <div class="h-meta">
-      <div class="chip">Day <b id="hudDay">1</b> / 30</div>
-      <div class="chip">Actions <b id="hudAct">0</b> / 3</div>
-    </div>
-  </div>
-</header>
+    <div class="main">
+      <!-- 좌: 정보 · 스케줄 -->
+      <section class="panel">
+        <div class="hd">정보 · 스케줄</div>
+        <div class="bd">
+          <div style="display:grid;gap:8px;margin-bottom:8px">
+            <div class="chip" id="chipName">이름: -</div>
+            <div class="chip" id="chipGender">성별: -</div>
+            <div class="date" id="chipMonth">1월</div>
+          </div>
 
-<main class="container">
-  <!-- LEFT: Stage -->
-  <section class="card stage">
-    <h2>Stage</h2>
-    <div class="canvas">
-      <img id="slimeImg" alt="slime"/>
-      <div class="toast" id="toast"></div>
-    </div>
+          <div style="font-weight:900;margin:8px 0 6px">이번 달 스케줄</div>
+          <div class="sched" id="sched"></div>
+          <div id="actionsRow" class="actions-row"></div>
 
-    <div class="card" style="padding:14px">
-      <h2 style="margin-bottom:10px">Actions</h2>
-      <div class="actions">
-        <button class="btn" data-act="운동">운동</button>
-        <button class="btn" data-act="유니티">유니티</button>
-        <button class="btn" data-act="일">일</button>
-        <button class="btn" data-act="독서">독서</button>
-        <button class="btn" data-act="VRC">VRC</button>
+          <div style="font-weight:900;margin:12px 0 6px">로그</div>
+          <div class="log" id="logBox" aria-live="polite"><div class="item">▸ UI 준비 완료.</div></div>
+
+          <div style="display:grid;gap:8px;margin-top:12px">
+            <button class="btn" id="btnClear">스케줄 비우기</button>
+            <button class="btn primary" id="btnStartMonth">▶ 한 달 시작</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 우: 위 캐릭터 / 아래 스탯 -->
+      <div class="right">
+        <section class="panel">
+          <div class="hd">캐릭터</div>
+          <div class="bd face">
+            <!-- 머리 위 성격 문장 배너(20초) -->
+            <div id="pBanner" class="p-banner" aria-live="polite"></div>
+
+            <!-- 큰 얼굴(흰 선, 채우기 없음, 굵게) -->
+            <svg id="avatar" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" aria-label="캐릭터">
+              <circle cx="120" cy="120" r="90"/>
+              <circle id="eyeL" cx="92" cy="110" r="5"/>
+              <circle id="eyeR" cx="148" cy="110" r="5"/>
+              <path id="mouth" d="M92 150 Q120 152 148 150"/>
+            </svg>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="hd">스탯</div>
+          <div class="bd" id="statsBox"><!-- JS 채움 --></div>
+        </section>
       </div>
-      <div class="controls" style="margin-top:12px">
-        <button class="btn btn-primary" id="nextBtn">다음 날 ▶</button>
-        <button class="btn" id="resetDayBtn">다시하기</button>
-        <button class="btn" id="resetAllBtn">처음부터</button>
+    </div>
+  </div>
+
+  <!-- 시작 팝업: 스토리 → 프로필 -->
+  <div class="ov" id="startOv" role="dialog" aria-modal="true">
+    <div class="card">
+      <div class="card-h" id="startHd">시작</div>
+      <div class="card-b" id="startBd">
+        <p>눈을 뜨니 낯선 천장.</p>
+        <p>주머니엔 이름 모를 동전 몇 개와 낡은 주간… 아니, 월간 계획표 한 장.</p>
+        <p>어디인지도 모르겠지만, 돌아가는 길도 없다.</p>
+        <p><b>오늘부터 1년—내가 정하는 대로 살아본다.</b></p>
+      </div>
+      <div class="card-r" id="startRow">
+        <button class="btn primary" id="btnNext">다음</button>
       </div>
     </div>
-  </section>
+  </div>
 
-  <!-- RIGHT: Status & Log -->
-  <aside class="card">
-    <h2>Status</h2>
+  <!-- 진행 오버레이 -->
+  <div class="run" id="runOv"><div class="run-box">일정 진행 중</div></div>
 
-    <!-- 듀얼바 5종 -->
-    <div class="stat-row">
-      <div class="stat-label">체력</div>
-      <div class="dual"><span class="mid"></span><span class="neg" id="neg-hp"></span><span class="pos" id="pos-hp"></span></div>
-      <div class="stat-val" id="val-hp">0</div>
-    </div>
-    <div class="stat-row">
-      <div class="stat-label">지능</div>
-      <div class="dual"><span class="mid"></span><span class="neg" id="neg-iq"></span><span class="pos" id="pos-iq"></span></div>
-      <div class="stat-val" id="val-iq">0</div>
-    </div>
-    <div class="stat-row">
-      <div class="stat-label">매력</div>
-      <div class="dual"><span class="mid"></span><span class="neg" id="neg-charm"></span><span class="pos" id="pos-charm"></span></div>
-      <div class="stat-val" id="val-charm">0</div>
-    </div>
-    <div class="stat-row">
-      <div class="stat-label">재력</div>
-      <div class="dual"><span class="mid"></span><span class="neg" id="neg-wealth"></span><span class="pos" id="pos-wealth"></span></div>
-      <div class="stat-val" id="val-wealth">0</div>
-    </div>
-    <div class="stat-row">
-      <div class="stat-label">스트레스</div>
-      <div class="dual"><span class="mid"></span><span class="neg" id="neg-stress"></span><span class="pos" id="pos-stress"></span></div>
-      <div class="stat-val" id="val-stress">0</div>
-    </div>
-
-    <div class="log-wrap">
-      <div class="log-title">Log</div>
-      <div class="log" id="log"></div>
-    </div>
-  </aside>
-</main>
-
-<!-- Ending Modal -->
-<div class="modal" id="endingModal" role="dialog" aria-modal="true">
-  <div class="modal-card">
-    <h3 id="endingTitle">엔딩</h3>
-    <img id="endingImg" alt="ending image" />
-    <p id="endingDesc">설명</p>
-    <div class="modal-actions">
-      <button class="btn" id="closeEnding">닫기</button>
-      <button class="btn btn-primary" id="restartAllFromEnding">처음부터</button>
+  <!-- 월간 결과 팝업 -->
+  <div class="ov" id="resOv" style="display:none">
+    <div class="card">
+      <div class="card-h">월간 결과</div>
+      <div class="card-b"><div id="resList" class="list"></div></div>
+      <div class="card-r"><button class="btn primary" id="resOk">확인</button></div>
     </div>
   </div>
-</div>
 
-<!-- Event Modal -->
-<div class="modal" id="eventModal" role="dialog" aria-modal="true">
-  <div class="modal-card">
-    <h3 id="eventTitle">이벤트</h3>
-    <p id="eventText"></p>
-    <div class="modal-actions">
-      <button class="btn" id="eventA">선택 A</button>
-      <button class="btn btn-primary" id="eventB">선택 B</button>
+  <!-- 이벤트 팝업(랜덤/계절 공용, 큐로 순차 표시) -->
+  <div class="ov" id="evtOv" style="display:none">
+    <div class="card">
+      <div class="card-h" id="evtHd">이벤트</div>
+      <div class="card-b" id="evtBd"></div>
+      <div class="card-r"><button class="btn primary" id="evtOk">확인</button></div>
     </div>
   </div>
-</div>
+
+  <!-- 엔딩 팝업 -->
+  <div class="ov" id="endOv" style="display:none">
+    <div class="card">
+      <div class="card-h" id="endHd">엔딩</div>
+      <div class="card-b" id="endBd"></div>
+      <div class="card-r">
+        <button class="btn" id="endRestart">다시 시작</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 토스트 -->
+  <div id="toast" class="toast"></div>
 
 <script>
-/* =========================
-   이미지 매핑 (제공 링크)
-========================= */
-const SLIME_IMG = {
-    기본: "https://github.com/jinjing9/-/blob/main/basic.png?raw=true",
-  청혜령: "https://github.com/jinjing9/-/blob/main/cheonghyeryeong.png?raw=true",
-  에티켓: "https://github.com/jinjing9/-/blob/main/etiquette.png?raw=true",
-  홍민택: "https://github.com/jinjing9/-/blob/main/hongmintaek.png?raw=true",
-  아이스본: "https://github.com/jinjing9/-/blob/main/iceborn.png?raw=true",
-  진징구: "https://github.com/jinjing9/-/blob/main/jinjingoo.png?raw=true",
-};
+/* ===== 공용 유틸 ===== */
+function showToast(msg,ms=1400){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),ms)}
+function pushLog(t){const box=document.getElementById('logBox');const el=document.createElement('div');el.className='item';el.textContent='▸ '+t;box.appendChild(el);box.scrollTop=box.scrollHeight}
+function clamp01(v){return Math.max(0,Math.min(100,v));}
 
-/* --- (신규) 프리로드: 엔딩 이미지 미리 로드해서 모달 때 빠르게 표시 --- */
-const PRELOADED = {};
-for (const [k, src] of Object.entries(SLIME_IMG)) {
-  const im = new Image();
-  im.src = src;
-  PRELOADED[k] = im;
-}
+/* ===== 기본 데이터 ===== */
+const ACTIONS=["훈련","공부","외출","알바","취미","휴식","모험"]; // 표기는 '알바'
+const SLOTS=[1,2,3,4]; // 한 달 4칸
+const statsOrder=["물리공격력","마법공격력","매력","재력","스트레스","예술","행운","체력"];
+const stats={물리공격력:10,마법공격력:10,매력:10,재력:10,스트레스:10,예술:10,행운:10,체력:10};
 
-/* =========================
-   요소
-========================= */
-const HUD_DAY = document.getElementById('hudDay');
-const HUD_ACT = document.getElementById('hudAct');
-
-const neg = {
-  체력: document.getElementById('neg-hp'),
-  지능: document.getElementById('neg-iq'),
-  매력: document.getElementById('neg-charm'),
-  재력: document.getElementById('neg-wealth'),
-  스트레스: document.getElementById('neg-stress')
-};
-const pos = {
-  체력: document.getElementById('pos-hp'),
-  지능: document.getElementById('pos-iq'),
-  매력: document.getElementById('pos-charm'),
-  재력: document.getElementById('pos-wealth'),
-  스트레스: document.getElementById('pos-stress')
-};
-const vals = {
-  체력: document.getElementById('val-hp'),
-  지능: document.getElementById('val-iq'),
-  매력: document.getElementById('val-charm'),
-  재력: document.getElementById('val-wealth'),
-  스트레스: document.getElementById('val-stress')
-};
-
-const img = document.getElementById('slimeImg');
-const toast = document.getElementById('toast');
-const logEl = document.getElementById('log');
-
-const nextBtn = document.getElementById('nextBtn');
-const resetDayBtn = document.getElementById('resetDayBtn');
-const resetAllBtn = document.getElementById('resetAllBtn');
-
-const endingModal = document.getElementById('endingModal');
-const endingTitle = document.getElementById('endingTitle');
-const endingDesc  = document.getElementById('endingDesc');
-const endingImg   = document.getElementById('endingImg');
-const closeEnding = document.getElementById('closeEnding');
-const restartAllFromEnding = document.getElementById('restartAllFromEnding');
-
-const eventModal = document.getElementById('eventModal');
-const eventTitle = document.getElementById('eventTitle');
-const eventText  = document.getElementById('eventText');
-const eventA     = document.getElementById('eventA');
-const eventB     = document.getElementById('eventB');
-
-/* =========================
-   상태
-========================= */
-let stats, day, actionsTaken, chosenActs;
-let dayStartSnapshot = null; // 하루 리셋용
-
-/* =========================
-   규칙 (−100~100 스케일)
-========================= */
-// 행동 기본 변화량 (중립 0 기준, 델타값)
-const ACTION_EFF = {
-  운동:   { 체력:+8,  지능:-3, 매력: 0,  재력: 0,  스트레스:-2,  anim:'anim-jump' },
-  유니티: { 체력:-4, 지능:-5, 매력:+10, 재력:-8, 스트레스:+8,   anim:'anim-flash' },
-  일:     { 체력:-5, 지능: 0,  매력:-3,  재력:+12, 스트레스:+8,   anim:'anim-shake' },
-  독서:   { 체력:-2, 지능:+10, 매력: 0,  재력: 0,  스트레스:-2,  anim:'anim-tilt' },
-  VRC:    { 체력:+6,  지능: 0,  매력:-1,  재력: 0,  스트레스:-12, anim:'anim-breathe' }
-};
-// 행동 내러티브
-const ACTION_TEXT = {
-  운동:'땀 흘리며 운동했다!',
-  유니티:'유니티로 아바타를 만지작… 예뻐졌다',
-  일:'죽어라 일해서 돈을 벌었다',
-  독서:'책을 읽으며 지식이 늘었다',
-  VRC:'VRC에서 힐링했다'
-};
-
-// 반복 페널티: 같은 날 2번째 ×0.6, 3번째 ×0.3
-function repeatFactor(n){ return n===1?1 : n===2?0.6 : 0.3; }
-
-// 소프트 캡: 0에서 멀어지는 방향이면 감쇠 (|val| 커질수록 ↓)
-function soften(val, delta){
-  const away = (val>0 && delta>0) || (val<0 && delta<0);
-  if(!away) return delta; // 0 쪽으로 가는 변화는 그대로
-  const a = Math.abs(val);
-  let f = 1;
-  if(a>=90) f = 0.25;
-  else if(a>=80) f = 0.45;
-  else if(a>=60) f = 0.7;
-  return Math.round(delta * f);
-}
-
-// 자연 복귀: 하루 끝나고 0을 향해 1pt (가끔 2pt)
-function driftTowardZero(v){
-  if(v===0) return 0;
-  const step = Math.random()<0.15?2:1;
-  return v>0 ? v-step : v+step;
-}
-
-const clamp = v => Math.max(-100, Math.min(100, v));
-// 작은 지터 (±10%)
-const jitter = v => Math.round(v * (1 + (Math.random()*0.2 - 0.1)));
-
-/* =========================
-   렌더 (듀얼바)
-========================= */
-function renderBars(){
-  for(const k of Object.keys(vals)){
-    const v = stats[k];
-    const posW = Math.max(0, v)/2;   // +100 -> 50%
-    const negW = Math.max(0,-v)/2;   // -100 -> 50%
-    pos[k].style.width = posW + '%';
-    neg[k].style.width = negW + '%';
-    vals[k].textContent = (v>0?'+':'') + v;
-  }
-  HUD_DAY.textContent = day;
-  HUD_ACT.textContent = actionsTaken;
-}
-function setSlimeImage(key='기본'){ img.src = SLIME_IMG[key] || SLIME_IMG.기본; }
-
-/* =========================
-   초기화 & 하루 스냅샷
-========================= */
-function markDayStart(){
-  dayStartSnapshot = { stats: {...stats}, imageSrc: img.src };
-}
-function resetAll(){ // 완전 초기화
-  stats = { 체력:0, 지능:0, 매력:0, 재력:0, 스트레스:0 };
-  day = 1; actionsTaken = 0; chosenActs = [];
-  setSlimeImage('기본');
-  logEl.innerHTML = '';
-  markDayStart();
-  enableActions(true);
-  renderBars();
-}
-function resetDay(){ // 하루 리셋
-  if(!dayStartSnapshot) return;
-  stats = {...dayStartSnapshot.stats};
-  img.src = dayStartSnapshot.imageSrc || SLIME_IMG.기본;
-  actionsTaken = 0; chosenActs = [];
-  logEl.innerHTML = '';
-  enableActions(true);
-  renderBars();
-}
-
-/* =========================
-   행동
-========================= */
-function showToast(text){
-  toast.textContent = text;
-  toast.style.display = 'block';
-  clearTimeout(showToast._t);
-  showToast._t = setTimeout(()=> toast.style.display='none', 1100);
-}
-function animateSlime(cls){
-  img.classList.remove('anim-jump','anim-flash','anim-shake','anim-tilt','anim-breathe');
-  void img.offsetWidth; img.classList.add(cls);
-}
-function enableActions(on){ document.querySelectorAll('[data-act]').forEach(b=> b.disabled = !on); }
-
-document.querySelectorAll('[data-act]').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    if(actionsTaken>=3) return;
-    const act = btn.dataset.act;
-    chosenActs.push(act);
-    actionsTaken++;
-
-    // 로그 (내러티브)
-    const p = document.createElement('p');
-    p.textContent = ACTION_TEXT[act] || act;
-    logEl.appendChild(p); logEl.scrollTop = logEl.scrollHeight;
-
-    animateSlime(ACTION_EFF[act].anim);
-    showToast(ACTION_TEXT[act]);
-
-    if(actionsTaken>=3) enableActions(false);
-    renderBars();
+/* ===== 스탯 렌더 ===== */
+function renderStats(){
+  const box=document.getElementById('statsBox'); box.innerHTML='';
+  statsOrder.forEach(k=>{
+    const row=document.createElement('div');row.className='stat-row';
+    row.innerHTML=`<div style="font-weight:900">${k}</div>
+      <div class="track"><div class="fill" id="bar-${k}" style="width:${Math.max(0,Math.min(100,stats[k]))}%"></div></div>
+      <div id="val-${k}" style="justify-self:end">${stats[k]}/100</div>`;
+    box.appendChild(row);
   });
+}
+renderStats();
+
+/* ===== 성격 대사 ===== */
+const LINES={
+  허세:["나 정도면 이미 전설이지.","하, 이런 건 쉽지.","이 몸의 위대함을 보아라!"],
+  학자:["지식은 힘이니까.","음, 이건 흥미로운데.","배움엔 끝이 없어."],
+  예민:["아 좀 조용히 해봐;","그 소리 좀 줄여줄래?","집중이 안 되잖아."],
+  수줍:["…그… 안녕.","아… 저기…","말…걸어줘서…고마워."],
+  온화:["오늘도 평화롭네.","다 잘 될 거야.","마음부터 천천히."],
+  냉철:["감정에 휘둘리면 안 돼.","분석부터 하지.","계획대로면 문제없어."],
+  낙천:["뭐 어때, 재밌으면 됐지!","오늘도 기분 좋다!","다 잘 될 거야, 무조건!"],
+  소심:["괜히 나섰나…","이게 맞을까…","아무 일 없으면 좋겠다…"]
+};
+let lastLine='';
+function showPersonalityLine(trait){
+  const pool=LINES[trait]||[]; if(!pool.length) return;
+  let pick=pool[Math.floor(Math.random()*pool.length)];
+  if(pick===lastLine){ pick=pool[(pool.indexOf(pick)+1)%pool.length]; }
+  lastLine=pick;
+  const b=document.getElementById('pBanner');
+  b.textContent=pick; b.classList.add('show');
+  setTimeout(()=>b.classList.remove('show'), 20000);
+}
+function pickTraitByStats(){
+  if(stats.스트레스>=55 && stats.체력<=35) return '소심';
+  if(stats.스트레스>=65) return '예민';
+  if(stats.매력>=45) return '허세';
+  if(stats.마법공격력>=50 || stats.예술>=50) return '학자';
+  if(stats.행운>=55) return '낙천';
+  if(stats.체력>=55 && stats.스트레스<=25) return '온화';
+  if(stats.재력>=55 || (stats.마법공격력+stats.물리공격력)>=95) return '냉철';
+  return '수줍';
+}
+
+/* ===== 시작 팝업: 스토리 → 프로필 ===== */
+const startOv=document.getElementById('startOv'), startHd=document.getElementById('startHd'), startBd=document.getElementById('startBd'), startRow=document.getElementById('startRow');
+document.getElementById('btnNext').addEventListener('click',()=>{
+  startHd.textContent='프로필';
+  startBd.innerHTML=`<div style="display:grid;gap:10px">
+    <label>이름</label>
+    <input id="pName" type="text" maxlength="12" placeholder="이름을 입력하세요"
+      style="width:100%;background:#0f1316;border:1px solid rgba(236,230,220,.12);color:var(--ink);border-radius:10px;padding:10px">
+    <label>성별</label>
+    <select id="pGender" style="width:100%;background:#0f1316;border:1px solid rgba(236,230,220,.12);color:var(--ink);border-radius:10px;padding:10px">
+      <option>남</option><option>여</option>
+    </select>
+  </div>`;
+  startRow.innerHTML=`<button class="btn primary" id="btnStart">시작하기</button>`;
+  document.getElementById('btnStart').addEventListener('click',()=>{
+    const name=(document.getElementById('pName').value||'플레이어').trim();
+    const gender=document.getElementById('pGender').value;
+    document.getElementById('chipName').textContent='이름: '+name;
+    document.getElementById('chipGender').textContent='성별: '+gender;
+    startOv.style.display='none'; pushLog('게임을 시작했습니다.');
+  },{once:true});
+},{once:true});
+
+/* ===== 월 표기 ===== */
+let monthCount=1;
+function renderMonth(){ document.getElementById('chipMonth').textContent=monthCount+'월'; }
+renderMonth();
+
+/* ===== 인라인 스케줄러(정확히 4칸) ===== */
+const grid=document.getElementById('sched');
+const actionsRow=document.getElementById('actionsRow');
+let schedule=["-","-","-","-"];
+let selectedIdx=null;
+
+function isFull(){return schedule.every(v=>v!=='-');}
+function hasSelected(){return selectedIdx!=null;}
+function nextEmptyIndex(){const idx=schedule.indexOf('-');return idx===-1?null:idx;}
+
+function updateActionButtonsDisabled(){ const disable=isFull(); actionsRow.querySelectorAll('button').forEach(b=>b.disabled=disable); }
+
+function renderGrid(){
+  grid.innerHTML='';
+  SLOTS.forEach((n,i)=>{
+    const act=schedule[i];
+    const el=document.createElement('div');
+    el.className='cell'+(act==='-'?' empty':'')+(i===selectedIdx?' selected':'');
+    el.innerHTML=`<div class="d">${n}</div><div class="v">${act}</div>`;
+    el.addEventListener('click',()=>{selectedIdx=i;renderGrid();});
+    el.addEventListener('dblclick',()=>{schedule[i]='-';renderGrid();pushLog(`${n}칸: 비움`);});
+    grid.appendChild(el);
+  });
+  updateActionButtonsDisabled();
+}
+function applyAction(act){
+  if(isFull()){ showToast('스케줄이 꽉 찼습니다.'); return; }
+  let target=(hasSelected())?selectedIdx:nextEmptyIndex();
+  if(target==null){ showToast('스케줄이 꽉 찼습니다.'); return; }
+  schedule[target]=act;
+  pushLog(`${target+1}칸: ${act}`);
+  selectedIdx=(target+1)%4; renderGrid();
+}
+ACTIONS.forEach(act=>{
+  const b=document.createElement('button'); b.className='btn'; b.textContent=act;
+  b.addEventListener('click',()=>applyAction(act)); actionsRow.appendChild(b);
 });
-
-/* =========================
-   하루 종료: 합산 적용 (반복 페널티 개선)
-========================= */
-function applyDayChanges(){
-  const add = { 체력:0, 지능:0, 매력:0, 재력:0, 스트레스:0 };
-  const usedCount = {}; // 행동별 누적 카운트
-
-  for(const act of chosenActs){
-    usedCount[act] = (usedCount[act]||0) + 1; // 이번 적용이 몇 번째인지
-    const eff = ACTION_EFF[act];
-    const r = repeatFactor(usedCount[act]);
-
-    for(const k of Object.keys(add)){
-      if(eff[k]===undefined) continue;
-      const base = eff[k];
-      const delta = jitter(Math.round(base * r));
-      add[k] += soften(stats[k], delta);
-    }
+document.getElementById('btnClear').addEventListener('click',()=>{ schedule=["-","-","-","-"]; selectedIdx=null; renderGrid(); pushLog('스케줄을 비웠습니다.'); });
+document.addEventListener('keydown',(e)=>{
+  const tag=(e.target&&e.target.tagName)||''; if(/INPUT|TEXTAREA|SELECT/.test(tag)) return;
+  if(e.key==='ArrowLeft'){ selectedIdx=(selectedIdx==null)?3:(selectedIdx+3)%4; renderGrid(); }
+  else if(e.key==='ArrowRight'){ selectedIdx=(selectedIdx==null)?0:(selectedIdx+1)%4; renderGrid(); }
+  else if(e.key==='Delete'||e.key==='Backspace'){ if(hasSelected()){ schedule[selectedIdx]='-'; renderGrid(); pushLog(`${selectedIdx+1}칸: 비움`);} }
+  else{
+    const map={'1':'훈련','2':'공부','3':'외출','4':'알바','5':'취미','6':'휴식','7':'모험'};
+    if(map[e.key]) applyAction(map[e.key]);
   }
+});
+renderGrid();
+
+/* ===== 행동→스탯 증감 (상승은 '찔끔', 하락은 '확실히') ===== */
+const EFFECTS={
+  "훈련": {물리공격력:+1, 체력:-3, 스트레스:+3},
+  "공부": {마법공격력:+1, 예술:+1, 체력:-1, 스트레스:+3},
+  "외출": {매력:+1, 행운:+1, 체력:-1, 스트레스:-2},
+  "알바": {재력:+2, 체력:-3, 스트레스:+4},
+  "취미": {예술:+1, 스트레스:-2},
+  "휴식": {체력:+10, 스트레스:-10},
+  "모험": {물리공격력:+1, 마법공격력:+1, 행운:+1, 체력:-3, 스트레스:+4}
+};
+
+/* ===== 월 처리 ===== */
+function applyMonthAndGetDelta(){
+  const delta={물리공격력:0,마법공격력:0,매력:0,재력:0,스트레스:0,예술:0,행운:0,체력:0};
+  // 기본 합산
+  schedule.forEach(act=>{ const eff=EFFECTS[act]; if(!eff) return; for(const k in eff){ delta[k]+=eff[k]; }});
+  // 반복 패널티(숨김): 같은 행동을 3회 이상이면 초과 1회당 스트레스 +2
+  const freq={}; schedule.forEach(a=>{freq[a]=(freq[a]||0)+1;});
+  Object.keys(freq).forEach(a=>{ const extra=Math.max(0,freq[a]-2); if(extra>0) delta.스트레스 += 2*extra; });
 
   // 적용
-  for(const k of Object.keys(stats)){
-    stats[k] = clamp(stats[k] + add[k]);
-  }
-  // 자연 복귀(0쪽으로 1pt, 가끔 2pt)
-  for(const k of Object.keys(stats)){
-    stats[k] = clamp(driftTowardZero(stats[k]));
-  }
-
-  // 다음날 준비(하루 로그는 비움)
-  chosenActs = []; actionsTaken = 0; enableActions(true);
-  renderBars();
-  logEl.innerHTML = '';
+  for(const k of statsOrder){ stats[k]=clamp01(stats[k]+(delta[k]||0)); }
+  return delta;
+}
+function animateStats(){
+  statsOrder.forEach(k=>{
+    const bar=document.getElementById('bar-'+k);
+    const val=document.getElementById('val-'+k);
+    bar.style.transition='width .6s ease'; bar.style.width=stats[k]+'%';
+    val.textContent=stats[k]+'/100';
+    setTimeout(()=>bar.style.transition='',700);
+  });
+}
+function showMonthResult(delta){
+  const lines=statsOrder.map(k=>{
+    const v=delta[k]||0;
+    let symbol='·',cls='';
+    if(v>0){symbol='▲ +'+v;}
+    else if(v<0){symbol='▼ '+v;cls='dim';}
+    else {symbol='±0'; cls='dim2';}
+    return `<div class="${cls}" style="font-weight:${v!==0?'900':'700'}">${k}  ${symbol}</div>`;
+  }).join('');
+  document.getElementById('resList').innerHTML=lines; 
+  document.getElementById('resOv').style.display='flex';
 }
 
-/* =========================
-   이벤트: 스탯별 조건 + 팝업 선택
-========================= */
-// 이벤트 정의(스탯당 1개, 조건 충족 시 후보)
-const EVENTS = [
+/* ===== 이벤트(랜덤 + 계절) 큐 ===== */
+const evtOv=document.getElementById('evtOv'), evtHd=document.getElementById('evtHd'), evtBd=document.getElementById('evtBd');
+const evtOk=document.getElementById('evtOk');
+let eventQueue=[]; // {title, text, apply?:fn}
+
+const RANDOM_EVENTS=[
+  {title:'우연한 발견', text:'골목에서 낡은 마법서를 주웠다.', apply:()=>{stats.마법공격력=clamp01(stats.마법공격력+3); stats.스트레스=clamp01(stats.스트레스+5);} },
+  {title:'고양이 구조', text:'비에 젖은 고양이를 품에 안았다.', apply:()=>{stats.매력=clamp01(stats.매력+2); stats.행운=clamp01(stats.행운+1); stats.스트레스=clamp01(stats.스트레스-2);} },
+  {title:'감기', text:'몸살이 나서 며칠을 끙끙 앓았다.', apply:()=>{stats.체력=clamp01(stats.체력-12); stats.스트레스=clamp01(stats.스트레스+6);} },
+  {title:'소소한 행운', text:'길거리 복권이 당첨됐다.', apply:()=>{stats.재력=clamp01(stats.재력+8); stats.행운=clamp01(stats.행운+1);} },
+  {title:'야외 피크닉', text:'맑은 날 공원에서 쉬었다.', apply:()=>{stats.체력=clamp01(stats.체력+5); stats.스트레스=clamp01(stats.스트레스-6); stats.매력=clamp01(stats.매력+1);} },
+];
+function seasonKeyOf(month){return month===3?'spring':month===6?'summer':month===9?'fall':month===12?'winter':null;}
+const SEASON_TEXT={
+  spring:{title:'봄맞이 축제', ok:'준비한 만큼의 결과가 나왔습니다!', fail:'아쉽지만 실력 부족이었네요.'},
+  summer:{title:'여름 해변 대회', ok:'뜨거운 햇살 속에서도 멋지게 해냈습니다!', fail:'햇볕이 너무 뜨거웠나 봅니다…'},
+  fall:{title:'가을 수확제', ok:'풍성한 결실을 거두었습니다!', fail:'올해는 수확이 부진하군요.'},
+  winter:{title:'겨울 설원 대회', ok:'차가운 바람 속에서도 승리를 거뒀습니다!', fail:'추위에 지고 말았네요.'}
+};
+function checkSeasonSuccess(key){
+  switch(key){
+    case 'spring': return (stats.매력>=30 && stats.예술>=25);
+    case 'summer': return (stats.체력>=40 && stats.물리공격력>=30);
+    case 'fall':   return (stats.재력>=40 || stats.행운>=45);
+    case 'winter': return (stats.마법공격력>=40 && stats.체력>=35);
+    default: return false;
+  }
+}
+function queueMonthlyEvents(){
+  // 1) 랜덤 이벤트 (항상 1개)
+  const ev = RANDOM_EVENTS[Math.floor(Math.random()*RANDOM_EVENTS.length)];
+  eventQueue.push({title:'이벤트', text:ev.text, apply:ev.apply});
+  // 2) 계절 이벤트 (3,6,9,12월)
+  const key=seasonKeyOf(monthCount);
+  if(key){
+    const ok=checkSeasonSuccess(key);
+    const info=SEASON_TEXT[key];
+    eventQueue.push({title:info.title, text: ok?info.ok:info.fail});
+  }
+}
+function runEventQueue(){
+  if(eventQueue.length===0){ evtOv.style.display='none'; return; }
+  const ev=eventQueue.shift();
+  evtHd.textContent=ev.title;
+  evtBd.textContent=ev.text;
+  evtOv.style.display='flex';
+  evtOk.onclick=()=>{
+    // 효과가 있으면 적용 후 스탯바 갱신
+    if(typeof ev.apply==='function'){ ev.apply(); animateStats(); }
+    evtOv.style.display='none';
+    // 다음 이벤트가 남았으면 이어서
+    setTimeout(runEventQueue, 0);
+  };
+}
+
+/* ===== 엔딩 ===== */
+const ENDINGS = [
+  // ===== 특수(희귀) =====
   {
-    key:'hpLow',
-    cond:(s)=> s.체력 <= -60,
-    title:'기절 직전',
-    text:'몸이 휘청거린다. 병원에 갈까?',
-    a:{ label:'병원 간다', eff:{체력:+20, 재력:-15, 스트레스:-5} },
-    b:{ label:'그냥 쉰다', eff:{체력:+8,  스트레스:+5} }
+    id:'hong', name:'홍민택', type:'special',
+    cond:s=>{
+      return s.마법공격력>=72 && s.물리공격력>=55 && s.스트레스<=38 && s.매력>=32;
+    },
+    lines:[
+      "직업: 마왕(Overlord)",
+      "그는 힘을 탐했다. 빛의 기사단을 무너뜨리고, 신전의 성물을 부수었으며,",
+      "왕국의 성벽을 재로 만들었다.",
+      "하늘은 피빛으로 물들었고, 대지는 절망의 그림자에 잠겼다.",
+      "그의 발걸음이 닿는 곳마다 생명이 시들고, 공포가 태어났다.",
+      "결국 세계는 하나의 이름을 속삭였다.",
+      "거대한 암흑의 옥좌에 앉은 그는, 칠흑 같은 날개를 펼치며 선언했다..",
+      "“모든 빛은 꺼졌다… 이제 이 세상은 영원히 나의 밤이다.”"
+    ]
   },
   {
-    key:'iqHigh',
-    cond:(s)=> s.지능 >= +60,
-    title:'머리 과열',
-    text:'너무 많은 걸 알아버렸다.',
-    a:{ label:'심호흡',     eff:{지능:-8,  스트레스:-6} },
-    b:{ label:'더 파고든다', eff:{지능:+4,  스트레스:+10} }
+    id:'ice', name:'아이스본', type:'special',
+    cond:s=>{
+      return s.매력>=70 && s.재력>=60 && s.물리공격력>=45 && s.스트레스<=32;
+    },
+    lines:[
+      "직업: 국왕(King)",
+      "그는 어려서부터 뛰어난 리더십과 전략적 사고를 보였다.",
+      "계절이 바뀔 때마다 전쟁과 외교를 오가며, 백성들의 신뢰를 단단히 쌓아갔다.",
+      "금빛 왕관이 머리에 얹히는 순간, 수천 명의 함성이 궁전을 울렸다.",
+      "왕좌에 앉은 그는 천천히 미소 지으며 말했다.",
+      "“이제… 이 나라는 나와 함께 영원할 것이다.”"
+    ]
   },
   {
-    key:'charmHigh',
-    cond:(s)=> s.매력 >= +70,
-    title:'즉석 요청',
-    text:'사람들이 사진을 요청한다.',
-    a:{ label:'사진 찍어준다', eff:{매력:+5, 체력:-4, 스트레스:+5} },
-    b:{ label:'정중히 거절',   eff:{매력:-6, 스트레스:-4} }
+    id:'jin', name:'진징구', type:'special',
+    cond:s=>{
+      return s.스트레스>=76 && s.재력>=60 && s.매력>=55;
+    },
+    lines:[
+      "직업: 이세계 귀환자",
+      "그는 재력과 명예, 그리고 수많은 인연을 쌓으며 완벽한 삶을 살고 있었다.",
+      "하지만 어느 날, 알 수 없는 힘이 세상을 뒤흔들었다.",
+      "하늘에 거대한 균열이 생기고, 그 틈에서 낮선 빛이 쏟아 내려왔다.",
+      "그는 저항하려 했지만, 몸은 빛 속으로 빨려 들어갔다.",
+      "눈을 떴을 때, 모든 것이 사라져 있었다—성도, 친구도, 그가 지켜온 세계도.",
+      "남은 건 낯설게 느껴지는 현실의 작은 방과, 텅 빈 손뿐이었다.",
+      "그는 창밖의 회색 하늘을 바라보며 낮게 내뱉었다.",
+      "“…왜 하필 지금이었지.”"
+    ]
+  },
+
+  // ===== 기본(동률시 가장 높은 점수 채택) =====
+  {
+    id:'oz', name:'오즈', type:'normal',
+    score:s => 1.0*s.예술 + 0.6*s.마법공격력 - 0.2*s.체력 - 0.25*s.스트레스,
+    lines:[
+      "직업: 대마법사(Archwizard)",
+      "그는 게으르면서도 완벽해야 했다.",
+      "하루의 절반은 침대 위에서 뒹굴었고, 나머지 절반은 커피를 마시며 하늘만 바라봤다.",
+      "하지만 단 하나—마법만큼은 완벽해야 했다.",
+      "그는 10년 동안 오직 한 주문만 다듬고 또 다듬었다.",
+      "수백 번의 실패 끝에 완성된 그 마법은, 단 한 번의 시전에서 세상을 구했다.",
+      "모든 것이 끝난 후, 그는 다시 침대에 몸을 던지며 중얼거렸다.",
+      "“…이제 한 백 년쯤은 잘 수 있겠네.”"
+    ]
   },
   {
-    key:'wealthHigh',
-    cond:(s)=> s.재력 >= +70,
-    title:'한턱 쏘기',
-    text:'오늘은 한턱 쏠까?',
-    a:{ label:'한턱 쏜다', eff:{재력:-15, 매력:+10, 스트레스:+5} },
-    b:{ label:'모른 척한다', eff:{스트레스:-5} }
+    id:'etq', name:'에티켓', type:'normal',
+    score:s => 0.6*(100-s.스트레스) + 0.5*s.체력 + 0.4*s.매력,
+    lines:[
+      "직업: 성기사(Holy Knight)",
+      "그는 거대한 체구와 강철 같은 갑옷을 두른 기사였다.",
+      "하지만 그의 품속에는 언제나 작은 고양이 한 마리가 있었다.",
+      "전쟁터에서 검과 방패로 적을 쓰러뜨리는 동안에도,",
+      "틈만 나면 고양이 간식을 챙기는 걸 잊지 않았다.",
+      "수많은 전투가 끝난 날, 그는 갑옷을 벗고 고양이 무리를 둘러보며 말했다.",
+      "“자, 이제 고양이 왕국을 세울 차례군.”"
+    ]
   },
   {
-    key:'stressHigh',
-    cond:(s)=> s.스트레스 >= +70,
-    title:'폭발 직전',
-    text:'감정이 폭발하기 직전이다.',
-    a:{ label:'운동으로 풀기', eff:{스트레스:-15, 체력:-5} },
-    b:{ label:'꾹 참는다',     eff:{스트레스:-5,  지능:-3} }
+    id:'bgr', name:'비구름', type:'normal',
+    score:s => 0.9*s.마법공격력 + 0.5*s.행운 - 0.2*s.스트레스,
+    lines:[
+      "직업: 마도 교수(Professor of Magic)",
+      "그는 언제나 차분했고, 목소리는 조곤조곤했다.",
+      "강의실에서 수백 명의 제자들에게 마법 이론을 가르치고,",
+      "연구실에서는 실험과 논문으로 하루를 보냈다.",
+      "어느 날, 시범 수업 도중 마법진이 폭발하는 사고가 났다.",
+      "학생들이 놀라 비명을 지르자, 그는 먼지를 털고 아무렇지 않게 말했다.",
+      "“자, 여기까지가 오늘의 실습입니다.”"
+    ]
+  },
+  {
+    id:'chr', name:'청혜령', type:'normal',
+    score:s => 1.0*s.예술 + 0.7*s.매력,
+    lines:[
+      "직업: 왕궁 화가(Royal Painter)",
+      "그는 왕의 즉위식, 전쟁의 승전일, 마지막 연회까지—",
+      "왕국의 모든 순간을 화폭에 담아왔다.",
+      "그는 언제나 미소를 띠고 있었고, 그림을 그리는 동안만큼은",
+      "세상의 소란도, 권력의 다툼도 잊은 듯 보였다.",
+      "마지막 날, 궁전의 발코니에서 황혼을 그리던 그는",
+      "무너져가는 성을 바라보며 붓을 멈추지 않았다.",
+      "그리고 완성된 그림을 보며 나지막이 웃었다.",
+      "“그래도 참… 좋은 풍경이네.”"
+    ]
+  },
+  {
+    id:'han', name:'한비', type:'normal',
+    score:s => 0.6*s.재력 + 0.5*(100-s.체력) + 0.4*s.스트레스,
+    lines:[
+      "직업: 여관 주인(Innkeeper)",
+      "그는 하루도 조용할 날이 없는 여관을 운영했다.",
+      "모험가들이 밤낮없이 들이닥쳐 시끄럽게 떠들었고,",
+      "술통은 하루가 멀다 하고 바닥을 드러냈다.",
+      "매일같이 “오늘은 좀 쉴 수 있나…” 중얼거렸지만,",
+      "그는 항상 새벽까지 카운터를 지켰다.",
+      "그러다 보니 전쟁 영웅부터 도망친 도적까지,",
+      "이곳을 거쳐간 손님들의 이야기는 셀 수 없이 많아졌다.",
+      "어느 날 문득, 그는 웃으며 말했다.",
+      "“퇴근하고싶네...”"
+    ]
+  },
+  {
+    id:'dup', name:'강두팔', type:'normal',
+    score:s => 1.0*s.물리공격력 + 0.8*s.체력 + 0.2*s.매력,
+    lines:[
+      "직업: 전사(Warrior)",
+      "그는 거대한 전투망치를 휘두르는 왕국 최강의 전사였다.",
+      "하지만 스스로를 ‘공주’라 부르며 반짝이는 장신구와 드레스를 즐겨 입었다.",
+      "전장에서도 화려한 망토를 휘날리며 적을 쓸어버렸고,",
+      "전투가 끝나면 거울 앞에서 머리 모양을 가다듬었다.",
+      "사람들은 처음엔 비웃었지만, 곧 침묵할 수밖에 없었다.",
+      "왜냐하면 ‘공주님’이 나타난 전장은 언제나 완벽한 승리로 끝났기 때문이다.",
+      "승전 연회에서, 강두팔은 잔을 높이 들며 말했다.",
+      "“공주는… 오늘도 승리한다!”"
+    ]
   }
 ];
+const endOv=document.getElementById('endOv');
+const endHd=document.getElementById('endHd');
+const endBd=document.getElementById('endBd');
+document.getElementById('endRestart').addEventListener('click',()=>location.reload());
 
-function maybePickEvent(){
-  const eligible = EVENTS.filter(e=> e.cond(stats));
-  if(!eligible.length) return null;
-  // 조건 만족해도 매일 뜨지 않도록 확률 게이트
-  if(Math.random() < 0.35){
-    return eligible[Math.floor(Math.random()*eligible.length)];
+function showEndingModal(e){
+  endHd.textContent = `엔딩 · ${e.name}`;
+  endBd.innerHTML = (e.lines||[]).map(t=>`<p>${t}</p>`).join('');
+  document.getElementById('evtOv').style.display='none';
+  document.getElementById('resOv').style.display='none';
+  endOv.style.display='flex';
+}
+function pickEndingByStats(s){
+  // 특수(100 찍어야) 우선
+  for(const e of ENDINGS.filter(e=>e.type==='special')){ if(e.cond && e.cond(s)) return e; }
+  // 기본 — 점수 최고
+  let best=null, bestScore=-Infinity;
+  for(const e of ENDINGS.filter(e=>e.type==='normal')){
+    const sc = e.score ? e.score(s) : -Infinity;
+    if(sc>bestScore){ bestScore=sc; best=e; }
   }
-  return null;
+  return best || ENDINGS.find(e=>e.id==='oz');
 }
 
-function applyEffects(eff){
-  for(const [k,delta] of Object.entries(eff)){
-    stats[k] = clamp(stats[k] + delta);
-  }
-  renderBars();
-}
-function openEvent(ev, done){
-  eventTitle.textContent = ev.title;
-  eventText.textContent  = ev.text;
-  eventA.textContent = ev.a.label;
-  eventB.textContent = ev.b.label;
+/* ===== 한 달 시작 버튼 ===== */
+const runOv=document.getElementById('runOv');
+document.getElementById('btnStartMonth').addEventListener('click', async ()=>{
+  if(!isFull()){ showToast('4개를 선택해주세요.'); return; }
 
-  eventA.onclick = ()=>{ applyEffects(ev.a.eff); eventModal.classList.remove('active'); done(); };
-  eventB.onclick = ()=>{ applyEffects(ev.b.eff); eventModal.classList.remove('active'); done(); };
+  // 진행 오버레이
+  runOv.style.display='flex'; await new Promise(r=>setTimeout(r,1200)); runOv.style.display='none';
 
-  eventModal.classList.add('active');
-}
+  // 결과
+  const delta=applyMonthAndGetDelta(); 
+  showMonthResult(delta);
 
-/* =========================
-   엔딩 힌트 (Day 26 진입)
-========================= */
-const HINT_TEXT = {
-  '아이스본': '나쁘지 않은데요?',
-  '청혜령':   '저도 보는 눈이 있어요...',
-  '에티캣':   '놀자.',
-  '홍민택':   '으흐흐...',
-  '진징구':   '크아아아악',
-  '평범':     '아직 특별한 기운이 느껴지지 않아요.'
-};
-function guessEnding(s){
-  // 간단 스코어: 조건 충족 +2, 근접(10p) +1
-  const scores = {'아이스본':0,'청혜령':0,'에티캣':0,'홍민택':0,'진징구':0};
-  const near=(need,cur)=> Math.abs(need-cur)<=10;
+  // 월 진행 마감 후 처리
+  document.getElementById('resOk').onclick=()=>{
+    document.getElementById('resOv').style.display='none'; 
+    animateStats();
+    const trait=pickTraitByStats(); showPersonalityLine(trait);
 
-  // 아이스본: 지능≥+30, 매력≥+20, 재력≥+25, 체력≥+15, 스트레스≤−20
-  if(s.지능>=30) scores['아이스본']+=2; else if(near(30,s.지능)) scores['아이스본']++;
-  if(s.매력>=20) scores['아이스본']+=2; else if(near(20,s.매력)) scores['아이스본']++;
-  if(s.재력>=25) scores['아이스본']+=2; else if(near(25,s.재력)) scores['아이스본']++;
-  if(s.체력>=15) scores['아이스본']+=2; else if(near(15,s.체력)) scores['아이스본']++;
-  if(s.스트레스<=-20) scores['아이스본']+=2; else if(near(-20,s.스트레스)) scores['아이스본']++;
+    // 이벤트 큐 구성 후 실행
+    eventQueue=[]; queueMonthlyEvents(); runEventQueue();
 
-  // 청혜령: 체력≥+35, 재력≥+20, 지능≥+10, 스트레스≤0
-  if(s.체력>=35) scores['청혜령']+=2; else if(near(35,s.체력)) scores['청혜령']++;
-  if(s.재력>=20) scores['청혜령']+=2; else if(near(20,s.재력)) scores['청혜령']++;
-  if(s.지능>=10) scores['청혜령']+=2; else if(near(10,s.지능)) scores['청혜령']++;
-  if(s.스트레스<=0) scores['청혜령']+=2; else if(near(0,s.스트레스)) scores['청혜령']++;
+    // 다음 달로
+    monthCount++; renderMonth();
 
-  // 에티캣: 체력≥+10, 지능≥+10, 재력≤0, 스트레스≤+5
-  if(s.체력>=10) scores['에티캣']+=2; else if(near(10,s.체력)) scores['에티캣']++;
-  if(s.지능>=10) scores['에티캣']+=2; else if(near(10,s.지능)) scores['에티캣']++;
-  if(s.재력<=0) scores['에티캣']+=2; else if(near(0,s.재력)) scores['에티캣']++;
-  if(s.스트레스<=5) scores['에티캣']+=2; else if(near(5,s.스트레스)) scores['에티캣']++;
-
-  // 홍민택: 재력≥+20, 지능≥+20, 스트레스≥+15
-  if(s.재력>=20) scores['홍민택']+=2; else if(near(20,s.재력)) scores['홍민택']++;
-  if(s.지능>=20) scores['홍민택']+=2; else if(near(20,s.지능)) scores['홍민택']++;
-  if(s.스트레스>=15) scores['홍민택']+=2; else if(near(15,s.스트레스)) scores['홍민택']++;
-
-  // 진징구: 재력≥+15, 매력≥+10, 지능≤−10, 체력≤−20
-  if(s.재력>=15) scores['진징구']+=2; else if(near(15,s.재력)) scores['진징구']++;
-  if(s.매력>=10) scores['진징구']+=2; else if(near(10,s.매력)) scores['진징구']++;
-  if(s.지능<=-10) scores['진징구']+=2; else if(near(-10,s.지능)) scores['진징구']++;
-  if(s.체력<=-20) scores['진징구']+=2; else if(near(-20,s.체력)) scores['진징구']++;
-
-  let best='평범', bestScore=-1;
-  for(const [k,v] of Object.entries(scores)){ if(v>bestScore){ best=k; bestScore=v; } }
-  return best;
-}
-
-/* =========================
-   엔딩 판정
-========================= */
-const EXTREME_TEXT = {
-  hi:{체력:'단단해져 굳어버렸다...!', 지능:'너무 많은걸 알아버렸어.', 매력:'나는 이제 누굴 사랑해야하지?', 재력:'돈이 전부는 아닐거에요', 스트레스:'이럴 바엔 죽고말겠어'},
-  lo:{체력:'숨 쉬는 것도 힘든데ㅇ..ㅛ..?', 지능:'숨 쉬는 법을 잊어버렸ㅇ...', 매력:'아무도 저를 기억해주지 않아요.', 재력:'밥이 먹고싶어요...', 스트레스:'이렇게 행복해도 되는걸까?'}
-};
-function pickExtremeEnding(s){
-  const arr = [['체력',s.체력],['지능',s.지능],['매력',s.매력],['재력',s.재력],['스트레스',s.스트레스]]
-              .filter(([k,v])=> v>=95 || v<=-95);
-  if(!arr.length) return null;
-  arr.sort((a,b)=> Math.abs(b[1]) - Math.abs(a[1]));
-  const [key,val] = arr[0];
-  return { title:`${key} 극단 엔딩`, desc: val>=95 ? EXTREME_TEXT.hi[key] : EXTREME_TEXT.lo[key], name:null };
-}
-
-const ENDING_TEXT = {
-  '아이스본': { title:'아이스본 엔딩', desc:'좋은데요?' },
-  '청혜령':   { title:'청혜령 엔딩',   desc:'한 잔은 떠나버린 너를 위하여 또 한 잔은 너와의 영원한 사랑을 위하여 그리고 또 한 잔은 이미 초라해진 나를 위하여...' },
-  '에티캣':   { title:'에티캣 엔딩',   desc:'빵!' },
-  '홍민택':   { title:'홍민택 엔딩',   desc:'으흐흐... 똥' },
-  '진징구':   { title:'진징구 엔딩',   desc:'(담배 피러 감)' },
-  '평범':     { title:'평범 엔딩',     desc:'평범한 슬라임. 다음엔 다른 선택을 해보자!' }
-};
-function pickNormalEnding(s){
-  const list = [];
-  if(s.지능>=30 && s.매력>=20 && s.재력>=25 && s.체력>=15 && s.스트레스<=-20) list.push('아이스본');
-  if(s.체력>=35 && s.재력>=20 && s.지능>=10 && s.스트레스<=0) list.push('청혜령');
-  if(s.체력>=10 && s.지능>=10 && s.재력<=0 && s.스트레스<=5) list.push('에티캣');
-  if(s.재력>=20 && s.지능>=20 && s.스트레스>=15) list.push('홍민택');
-  if(s.재력>=15 && s.매력>=10 && s.지능<=-10 && s.체력<=-20) list.push('진징구');
-  if(!list.length) return {name:'평범', ...ENDING_TEXT['평범']};
-  const name = list.length===1 ? list[0] : list[Math.floor(Math.random()*list.length)];
-  return {name, ...ENDING_TEXT[name]};
-}
-
-/* =========================
-   진행 (이벤트 → 다음날 → 힌트/엔딩)
-========================= */
-function advanceDay(){
-  day++;
-  renderBars();
-
-  // Day 26 진입(5일 남음) → 힌트
-  if(day===26){
-    const hintKey = guessEnding(stats) || '평범';
-    const p = document.createElement('p');
-    p.textContent = `힌트: ${HINT_TEXT[hintKey]}`;
-    logEl.appendChild(p);
-  }
-
-  // 새 하루 스냅샷
-  markDayStart();
-
-  // (수정) 엔딩 처리: 이미지 로딩 후 모달 오픈
-  if (day > 30) {
-    let title = '엔딩', desc = '', imgKey = '기본';
-
-    const ex = pickExtremeEnding(stats);
-    if (ex) {
-      title = ex.title; desc = ex.desc; imgKey = '기본'; // 극단치는 기본이미지
-    } else {
-      const res = pickNormalEnding(stats); // {name, title, desc}
-      title = res.title; desc = res.desc;
-      imgKey = (res.name && SLIME_IMG[res.name]) ? res.name : '기본';
+    // 1년 종료 체크
+    if(monthCount>12){
+      const e = pickEndingByStats(stats);
+      showEndingModal(e);
     }
 
-    endingTitle.textContent = title;
-    endingDesc.textContent  = desc;
-    endingImg.style.display = 'block';
-    endingImg.alt = (imgKey === '기본' ? '기본' : imgKey) + ' 엔딩';
-
-    // 이전 src 잔상 방지 + 로딩 이벤트로 모달 열기
-    endingImg.removeAttribute('src');
-    endingImg.onload  = () => { endingModal.classList.add('active'); };
-    endingImg.onerror = () => { endingModal.classList.add('active'); };
-    endingImg.src = SLIME_IMG[imgKey];
-
-    return;
-  }
-}
-
-function tryNextDay(){
-  if(actionsTaken<3){ alert('하루에 3번 행동해야 합니다!'); return; }
-  applyDayChanges();
-
-  const ev = maybePickEvent();
-  if(ev){
-    openEvent(ev, advanceDay);
-  }else{
-    advanceDay();
-  }
-}
-
-/* 모달 버튼 */
-closeEnding.addEventListener('click', ()=> endingModal.classList.remove('active'));
-restartAllFromEnding.addEventListener('click', ()=>{ endingModal.classList.remove('active'); resetAll(); });
-
-/* 컨트롤 */
-nextBtn.addEventListener('click', tryNextDay);
-resetAllBtn.addEventListener('click', resetAll);  // 처음부터 (완전 초기화)
-resetDayBtn.addEventListener('click', resetDay);  // 다시하기 (하루 리셋)
-
-/* 시작 */
-resetAll();
+    // 다음 달 대비 초기화
+    document.getElementById('btnClear').click();
+  };
+});
 </script>
 </body>
 </html>
